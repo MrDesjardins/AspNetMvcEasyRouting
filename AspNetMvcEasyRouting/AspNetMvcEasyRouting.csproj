@@ -83,6 +83,7 @@
     <Compile Include="Routes\Infrastructures\LocalizedRoute.cs" />
     <Compile Include="Routes\Infrastructures\LocalizedSection.cs" />
     <Compile Include="Routes\Infrastructures\LocalizedSectionList.cs" />
+    <Compile Include="Routes\RouteExtensions.cs" />
     <Compile Include="Routes\RouteNotFound.cs" />
     <Compile Include="Routes\RouteReturn.cs" />
     <Compile Include="Routes\RouteVisitor.cs" />

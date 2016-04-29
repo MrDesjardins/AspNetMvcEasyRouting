@@ -14,6 +14,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
         [TestInitialize]
         public void BetweenTest()
         {
+            RouteTable.Routes.Clear();
         }
 
         /// <summary>

@@ -1,13 +1,9 @@
-﻿using FrontEndSharingLayer.Constants;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Routing;
-using ApplicationTier.FrontEndSharingLayer.Routes.Infrastructures;
-using WebSite.Infrastructures.Routes;
+using AspNetMvcEasyRouting.Routes.Infrastructures;
 
-namespace WebSite.Helpers
+namespace AspNetMvcEasyRouting.Routes
 {
     public static class RouteExtensions
     {
@@ -65,66 +61,68 @@ namespace WebSite.Helpers
         {
             foreach (var controller in controllerRoutes)
             {
-                foreach (var controllerTranslation in controller.Translation)
+               
+                foreach (var action in controller.ActionTranslations)
                 {
-                    foreach (var action in controller.ActionTranslations)
+                    var urlAction = action.Url;
+
+                    foreach (var actionTranslation in action.Translation)
                     {
-                        var urlAction = action.Url;
+                        var currentCulture = actionTranslation.CultureInfo.Name;
+                      
+                        //Controller
+                        var controllerTranslation = controller.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentCulture);
 
-                        foreach (var actionTranslation in action.Translation)
+                        //Start with action by handling the case of anonymous object for action or RouteValue. We wanta RouteValueDictionary at the end.
+                        RouteValueDictionary values = null;
+                        if (action.Values is RouteValueDictionary)
                         {
-                            if (controllerTranslation.CultureInfo == actionTranslation.CultureInfo)
-                            {
-                                //Start with action by handling the case of anonymous object for action or RouteValue. We wanta RouteValueDictionary at the end.
-                                RouteValueDictionary values = null;
-                                if (action.Values is RouteValueDictionary)
-                                {
-                                    values = action.Values as RouteValueDictionary;
-                                }
-                                else
-                                {
-                                    values = new RouteValueDictionary(action.Values);
-                                }
-
-                                //If the area is defined, we look up to see if we have one with the current Culture. If so, we add it to the route definition; else Null.
-                                LocalizedSection areaTranslation = null;
-                                if (areaSectionLocalized != null && areaSectionLocalized.Translation.Any(d => d.CultureInfo.Name == controllerTranslation.CultureInfo.Name))
-                                {
-                                    values[Constants.AREA] = areaSectionLocalized.AreaName;
-                                    areaTranslation = areaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == controllerTranslation.CultureInfo.Name);
-                                }
-                                values[Constants.CONTROLLER] = controller.ControllerName;
-                                values[Constants.ACTION] = action.ActionName;
-
-                                //Depending if the constraint was an anonymous object or a RouteValueDictionnary, we do or not a conversion to RouteValueDictionnary.
-                                RouteValueDictionary constraints = null;
-                                if (action.Constraints is RouteValueDictionary)
-                                {
-                                    constraints = action.Constraints as RouteValueDictionary;
-                                }
-                                else
-                                {
-                                    constraints = new RouteValueDictionary(action.Constraints);
-                                }
-                                //Replace remaining section with section localized value if defined, otherwise, the section remains there
-
-                                var newUrl = LocalizedSection.ReplaceSection(urlAction, areaTranslation, controllerTranslation, actionTranslation);
-
-                                //Add everything to the route. AreaSection can be null.
-                                routes.Add(new LocalizedRoute(
-                                      areaSectionLocalized
-                                    , controller
-                                    , action
-                                    , newUrl
-                                    , values
-                                    , constraints
-                                    , actionTranslation.CultureInfo
-                                    )
-                               );
-                            }
+                            values = action.Values as RouteValueDictionary;
                         }
+                        else
+                        {
+                            values = new RouteValueDictionary(action.Values);
+                        }
+
+                        //If the area is defined, we look up to see if we have one with the current Culture. If so, we add it to the route definition; else Null.
+                        LocalizedSection areaTranslation = null;
+                        if (areaSectionLocalized != null && areaSectionLocalized.Translation.Any(d => d.CultureInfo.Name == currentCulture))
+                        {
+                            values[Constants.AREA] = areaSectionLocalized.AreaName;
+                            areaTranslation = areaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentCulture);
+                        }
+                        values[Constants.CONTROLLER] = controller.ControllerName;
+                        values[Constants.ACTION] = action.ActionName;
+
+                        //Depending if the constraint was an anonymous object or a RouteValueDictionnary, we do or not a conversion to RouteValueDictionnary.
+                        RouteValueDictionary constraints = null;
+                        if (action.Constraints is RouteValueDictionary)
+                        {
+                            constraints = action.Constraints as RouteValueDictionary;
+                        }
+                        else
+                        {
+                            constraints = new RouteValueDictionary(action.Constraints);
+                        }
+                        //Replace remaining section with section localized value if defined, otherwise, the section remains there
+
+                        var newUrl = LocalizedSection.ReplaceSection(urlAction, areaTranslation, controllerTranslation, actionTranslation);
+
+                        //Add everything to the route. AreaSection can be null.
+                        routes.Add(new LocalizedRoute(
+                                areaSectionLocalized
+                            , controller
+                            , action
+                            , newUrl
+                            , values
+                            , constraints
+                            , actionTranslation.CultureInfo
+                            )
+                        );
                     }
                 }
+                
+               
             }
         }
     }

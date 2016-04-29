@@ -27,11 +27,10 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
         public IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString)
         {
             var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new LocalizedSectionList
-            {
-                new LocalizedSection(LocalizedSection.EN, controllerEnglishLocalizedString)
-                ,
-                new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString)
-            }
+                {
+                    new LocalizedSection(LocalizedSection.EN, controllerEnglishLocalizedString)
+                     ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString)
+                }
                 , null);
             this.ControllerList.Add(controllerSectionLocalized);
             if (this.AreaList.Any())
@@ -45,11 +44,10 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
         public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString)
         {
             var areaLocalized = new AreaSectionLocalized(areaName, new LocalizedSectionList
-            {
-                new LocalizedSection(LocalizedSection.EN, areaEnglishLocalizedString)
-                ,
-                new LocalizedSection(LocalizedSection.FR, areaFrenchLocalizedString)
-            }
+                {
+                     new LocalizedSection(LocalizedSection.EN, areaEnglishLocalizedString)
+                    ,new LocalizedSection(LocalizedSection.FR, areaFrenchLocalizedString)
+                }
                 , null);
             this.AreaList.Add(areaLocalized);
             var rbc = new RouteBuilderArea(areaLocalized, this);
@@ -96,7 +94,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
                 var currentNamespaces = this.currentControllerSection.NameSpaces;
                 var len = this.currentControllerSection.NameSpaces.Length;
                 Array.Resize(ref currentNamespaces, len + 1);
-                currentNamespaces[len - 1] = @namespace;
+                currentNamespaces[len] = @namespace;
                 this.currentControllerSection.NameSpaces = currentNamespaces;
             }
 
@@ -145,9 +143,8 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
             var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new LocalizedSectionList
             {
-                new LocalizedSection(LocalizedSection.EN, controllerEnglishLocalizedString)
-                ,
-                new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString)
+                 new LocalizedSection(LocalizedSection.EN, controllerEnglishLocalizedString)
+                ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString)
             }, null);
 
 
@@ -155,7 +152,10 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             {
                 this.routeBuilder.AreaList.Last().ControllerTranslations.Add(controllerSectionLocalized);
             }
-            this.currentControllerSection.ControllerTranslations.Add(controllerSectionLocalized);
+            else
+            {
+                this.currentControllerSection.ControllerTranslations.Add(controllerSectionLocalized);
+            }
             return new RouteBuilderController(controllerSectionLocalized, this.routeBuilder);
         }
     }

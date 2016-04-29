@@ -4,11 +4,9 @@ using System.Globalization;
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
-using AspNetMvcEasyRoutingTest;
-using AspNetMvcEasyRoutingTest.Routes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WebSiteUnitTest.Infrastructures.Route
+namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
 {
     [TestClass]
     public class LocalizedRouteTest : RouteTestBase
