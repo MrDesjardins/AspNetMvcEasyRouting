@@ -25,7 +25,9 @@ namespace AspNetMvcEasyRoutingTest.Routes
         /// <returns></returns>
         protected RouteAndContext GetRouteDataForUrl(string url)
         {
-            var context = this.FakeHttpContext(requestUrl: "~/" + url);
+            var fullUri = new Uri(url, UriKind.RelativeOrAbsolute);
+            string urlToUse = fullUri.IsAbsoluteUri ? url : "~/" + url;
+            var context = this.FakeHttpContext(requestUrl: urlToUse);
             RouteData routeData = RouteTable.Routes.GetRouteData(context);
             return new RouteAndContext(context, routeData);
         }
@@ -40,14 +42,14 @@ namespace AspNetMvcEasyRoutingTest.Routes
         /// <returns>Html</returns>
         protected UrlHelper GetUrlHelper(string appPath = "~/")
         {
-            HttpContextBase httpContext = this.FakeHttpContext("/", appPath);
+            HttpContextBase httpContext = this.FakeHttpContext(appPath);
             var routeData = /*RouteTable.Routes.GetRouteData(httpContext) ?? */ new RouteData();
             RequestContext requestContext = new RequestContext(httpContext, routeData);
             UrlHelper helper = new UrlHelper(requestContext, RouteTable.Routes);
             return helper;
         }
 
-        private HttpContextBase FakeHttpContext(string appPath = "~/", string requestUrl = "/")
+        private HttpContextBase FakeHttpContext(string requestUrl = "/")
         {
             // Mocks
             var context = new Mock<HttpContextBase>();
@@ -63,6 +65,8 @@ namespace AspNetMvcEasyRoutingTest.Routes
             var routePart = requestUrl;
             var queryStringPart = requestUrl;
 
+            var fullUri = new Uri(requestUrl, UriKind.RelativeOrAbsolute);
+            var absolutePath = fullUri.IsAbsoluteUri? fullUri.AbsolutePath:"/";
             if (routePart.Contains("?"))
             {
                 var indexQueryString = routePart.IndexOf("?", StringComparison.InvariantCulture);
@@ -78,10 +82,17 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
                 request.Setup(req => req.Params).Returns(parameters);
             }
+            else
+            {
+                routePart = fullUri.IsAbsoluteUri ?  "~/": routePart;
+            }
 
             // Setup all Http Context
-            request.Setup(req => req.ApplicationPath).Returns(appPath);
+            request.Setup(req => req.ApplicationPath).Returns("/");
             request.Setup(req => req.AppRelativeCurrentExecutionFilePath).Returns(routePart);
+            request.Setup(req => req.CurrentExecutionFilePath).Returns(absolutePath);
+            request.Setup(req => req.FilePath).Returns(absolutePath);
+            request.Setup(req => req.RawUrl).Returns(absolutePath);
             request.Setup(req => req.PathInfo).Returns(string.Empty);
             request.Setup(req => req.ServerVariables).Returns(new NameValueCollection());
             response.Setup(res => res.ApplyAppPathModifier(It.IsAny<string>())).Returns((string virtualPath) => virtualPath);
@@ -94,6 +105,15 @@ namespace AspNetMvcEasyRoutingTest.Routes
             context.Setup(ctx => ctx.User).Returns(user.Object);
             requestContext.Setup(d => d.HttpContext).Returns(context.Object);
             request.Setup(d => d.RequestContext).Returns(requestContext.Object);
+            request.Setup(d => d.Url).Returns(fullUri);
+            //if (isAbsoluteUrl)
+            //{
+            //    request.Setup(d => d.Url).Returns(new Uri(requestUrl, UriKind.Absolute));
+            //}
+            //else
+            //{
+            //    request.Setup(d => d.Url).Returns(new Uri(requestUrl, UriKind.Relative));
+            //}
             return context.Object;
         }
 

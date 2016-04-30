@@ -342,12 +342,22 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
         public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action)
         {
-            var controller1 = this.ForBilingualController("{controller}", "{controller}", "{controller}");
-            var action1 = controller1.WithBilingualAction("{action}", "{action}", "{action}");
-            var action2 = action1.WithDefaultValues(Constants.CONTROLLER, controller);
-            var action3 = action2.WithDefaultValues(Constants.ACTION, action);
-            var action4 = action3.WithUrl("{controller}/{action}");
-            return action4;
+            return this.ForBilingualController("{controller}", "{controller}", "{controller}")
+                .WithBilingualAction("{action}", "{action}", "{action}")
+                .WithDefaultValues(Constants.CONTROLLER, controller)
+                .WithDefaultValues(Constants.ACTION, action)
+                .WithUrl("");
+        }
+
+        public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string area, string controller, string action)
+        {
+            return this.ForBilingualArea("{area}", "{area}", "{area}")
+                .WithBilingualController("{controller}", "{controller}", "{controller}")
+                .WithBilingualAction("{action}", "{action}", "{action}")
+                .WithDefaultValues(Constants.AREA, area)
+                .WithDefaultValues(Constants.CONTROLLER, controller)
+                .WithDefaultValues(Constants.ACTION, action)
+                .WithUrl("");
         }
 
         public IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString)
@@ -414,6 +424,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
     public interface IDomainRoute
     {
         IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action);
+        IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string area, string controller, string action);
     }
 
     public interface IAssociateNamespace

@@ -74,7 +74,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
         {
             if (httpContext.Request.Url != null)
             {
-                if (httpContext.Request.Url.AbsolutePath == "/")
+                if (httpContext.Request.Url.IsAbsoluteUri && httpContext.Request.Url.AbsolutePath == "/")
                 {
                     if (httpContext.Request.Url.Host == "http://yourdomain.com" || httpContext.Request.Url.Host == "localhost")
                     {
