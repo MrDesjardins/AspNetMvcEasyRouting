@@ -373,8 +373,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
-              .WithUrl("{area}/{controller}")
-              .AddDomainDefaultRoute("area1", "controller1", "action1")
+              .UseEmptyUrl()
               .ToListArea()
             ;
             RouteTable.Routes.AddRoutes(routesInStructure);
@@ -396,8 +395,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .ForBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
-              .WithUrl("{controller}")
-              .AddDomainDefaultRoute("controller1", "action1")
+              .UseEmptyUrl()
               .ToList()
             ;
             RouteTable.Routes.AddRoutes(routesInStructure);

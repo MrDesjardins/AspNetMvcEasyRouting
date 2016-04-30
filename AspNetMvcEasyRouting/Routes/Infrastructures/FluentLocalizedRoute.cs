@@ -340,26 +340,6 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             return this;
         }
 
-        public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action)
-        {
-            return this.ForBilingualController("{controller}", "{controller}", "{controller}")
-                .WithBilingualAction("{action}", "{action}", "{action}")
-                .WithDefaultValues(Constants.CONTROLLER, controller)
-                .WithDefaultValues(Constants.ACTION, action)
-                .WithUrl("");
-        }
-
-        public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string area, string controller, string action)
-        {
-            return this.ForBilingualArea("{area}", "{area}", "{area}")
-                .WithBilingualController("{controller}", "{controller}", "{controller}")
-                .WithBilingualAction("{action}", "{action}", "{action}")
-                .WithDefaultValues(Constants.AREA, area)
-                .WithDefaultValues(Constants.CONTROLLER, controller)
-                .WithDefaultValues(Constants.ACTION, action)
-                .WithUrl("");
-        }
-
         public IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString)
         {
             this.AddInActionList();
@@ -397,11 +377,11 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
         IRouteBuilderAction_ToList UseDefaulUrl();
     }
 
-    public interface IRouteBuilderAction_ToList : IRouteBuilder, IAndAction, ITranslatedTokens, IDomainRoute, IUrl, IRouteBuilderAction_ToListOnly
+    public interface IRouteBuilderAction_ToList : IRouteBuilder, IAndAction, ITranslatedTokens, IUrl, IRouteBuilderAction_ToListOnly
     {
     }
 
-    public interface IRouteBuilderAction_ToListWithoutUrl : IRouteBuilder, IAndAction, ITranslatedTokens, IDomainRoute, IRouteBuilderAction_ToListOnly, IUrlMirrorUrl
+    public interface IRouteBuilderAction_ToListWithoutUrl : IRouteBuilder, IAndAction, ITranslatedTokens, IRouteBuilderAction_ToListOnly, IUrlMirrorUrl
     {
     }
 
@@ -421,11 +401,6 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
         IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, string english, string french);
     }
 
-    public interface IDomainRoute
-    {
-        IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action);
-        IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string area, string controller, string action);
-    }
 
     public interface IAssociateNamespace
     {
