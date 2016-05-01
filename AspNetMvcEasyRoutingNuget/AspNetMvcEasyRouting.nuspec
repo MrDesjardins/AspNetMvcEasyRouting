@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>AspNetMvcEasyRouting</id>
+	<title>Asp.Net Mvc Easy Routing</title>
+    <version>1.0.0</version>
+    <authors>Patrick Desjardins</authors>
+    <owners>Patrick Desjardins</owners>
+    <projectUrl>https://github.com/MrDesjardins/AspNetMvcEasyRouting</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Asp.Net Mvc easy routing provides a user-friendly fluent Api to define routes in multiple languages.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>asp.net mvc route routing</tags>
+    <dependencies>
+      <dependency id="Microsoft.AspNet.Mvc" version="5.2.3" />
+      <dependency id="Microsoft.AspNet.Razor" version="3.2.3" />
+      <dependency id="Microsoft.AspNet.WebPages" version="3.2.3" />
+      <dependency id="Microsoft.Web.Infrastructure" version="1.0.0" />
+    </dependencies>
+  </metadata>
+  <files>
+		<file src="..\AspNetMvcEasyRouting\bin\Release\AspNetMvcEasyRouting.dll" target="lib" />
+  </files>
+</package>

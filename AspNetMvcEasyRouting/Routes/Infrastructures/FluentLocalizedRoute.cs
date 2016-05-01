@@ -322,7 +322,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
                 {
                     this.currentAction.Tokens = new Dictionary<string, LocalizedSectionList>();
                 }
-                var tokenToAdd = new Dictionary<string, LocalizedSectionList>();
+
                 if (this.currentAction.Tokens.Keys.Any(g => g == tokenKey))
                 {
                     //Already exist, tbd what we do here, for now nothing
@@ -332,8 +332,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
                     this.currentAction.Tokens.Add(tokenKey, new LocalizedSectionList
                     {
                         new LocalizedSection(LocalizedSection.EN, english)
-                        ,
-                        new LocalizedSection(LocalizedSection.FR, french)
+                        ,new LocalizedSection(LocalizedSection.FR, french)
                     });
                 }
             }

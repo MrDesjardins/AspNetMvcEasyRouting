@@ -200,8 +200,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
         /// <summary>
         ///     Adjust virtual path with action translation default value not in the route. This is because we can define default
-        ///     and the
-        ///     value of default is only used when not more specific from the route.
+        ///     and the value of default is only used when not more specific from the route.
         ///     Route has precedence on Default Value (this.ActionTranslation.Values)
         /// </summary>
         /// <param name="currentVirtualPath"></param>
