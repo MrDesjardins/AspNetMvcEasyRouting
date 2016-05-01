@@ -1,8 +1,9 @@
-# AspNetMvcEasyRouting
+# Asp.Net Mvc Easy Routing
 Asp.Net Mvc Easy Routing is a solution to create localized route easily with a fluent Api.
 
 This allow to have Area and Controller based route in Asp.Net MVC in a Fluent way for multiple language (as this moment English and French hardcoded).
 
+## Examples
 Here is examples with Area:
 
 	public static AreaSectionLocalizedList RoutesArea = FluentLocalizedRoute.BuildRoute()
@@ -46,8 +47,13 @@ Here is examples with controllers:
 					.WithDefaultValues(new {v1 = "boom"})
 					.WithUrl("{controller}/{action}/{v1}")
             .ToList();
-			
+
+## Documentations
+
 You can find more detail here:
  - [Localize Url without culture in Url](http://patrickdesjardins.com/blog/how-to-localized-mvc-routing-with-area-without-specifying-local-in-the-url-with-a-fluent-api)
  - [Route Fluent Api](http://patrickdesjardins.com/blog/improve-the-custom-localized-mvc-routing-with-fluent-api)
  - [Localized url with Asp.Net MVC and traversal pattern](http://patrickdesjardins.com/blog/localized-url-with-asp-net-mvc)
+ 
+## Nuget Package
+ You can find a Nuget package of this project at [Nuget.org](https://www.nuget.org/packages/AspNetMvcEasyRouting/)
