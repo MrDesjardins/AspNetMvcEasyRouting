@@ -68,7 +68,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var exception = Assert.Throws<ArgumentNullException>(() => { var local = new LocalizedRoute(null, controller, action, "url", null, null, null); });
 
             // Assert
-            Assert.Equal("local", exception.ParamName);
+            Assert.Equal("locale", exception.ParamName);
         }
 
         [Fact]
