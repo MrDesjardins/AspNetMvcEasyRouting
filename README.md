@@ -1,4 +1,5 @@
 # Asp.Net Mvc Easy Routing
+[![Build Status](https://travis-ci.org/MrDesjardins/AspNetMvcEasyRouting.svg?branch=master)](https://travis-ci.org/MrDesjardins/AspNetMvcEasyRouting)
 Asp.Net Mvc Easy Routing is a solution to create localized route easily with a fluent Api.
 
 This allow to have Area and Controller based route in Asp.Net MVC in a Fluent way for multiple language (as this moment English and French hardcoded).
