@@ -9,13 +9,12 @@ using Xunit;
 
 namespace AspNetMvcEasyRoutingTest.Routes
 {
-    public class RouteTestBase : ContextBoundObject, IClassFixture<RouteFixture>
+    public class RouteTestBase : ContextBoundObject
     {
-        private readonly RouteFixture routeFixture;
 
-        public RouteTestBase(RouteFixture routeFixture)
+        public RouteTestBase()
         {
-            this.routeFixture = routeFixture;
+           
         }
 
         /// <summary>

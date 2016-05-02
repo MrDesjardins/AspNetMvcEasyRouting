@@ -13,7 +13,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
     public class LocalizedRouteTest : RouteTestBase
     {
         private Locale enlishLocal;
-        public LocalizedRouteTest(RouteFixture routeFixture):base(routeFixture)
+        public LocalizedRouteTest()
         {
             this.enlishLocal = new Locale(new CultureInfo("en-US"));
         }

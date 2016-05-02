@@ -4,15 +4,15 @@ using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
 using Xunit;
-using Assert = Xunit.Assert;
+
 
 namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
 {
     
-    public class FluentLocalizedRouteTest:RouteTestBase, IClassFixture<RouteFixture>
+    public class FluentLocalizedRouteTest:RouteTestBase
     {
 
-        public FluentLocalizedRouteTest(RouteFixture routeFixture) : base(routeFixture)
+        public FluentLocalizedRouteTest()
         {
         }
 
@@ -348,6 +348,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenConstaintNotValid_ThenRouteFound()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -371,6 +372,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenConstaintWithObject_ThenRouteFound()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -399,6 +401,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenMoreThanOneArea_ThenRouteFound()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -430,6 +433,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerActionWithDomainRoute_WhenUseDomainRouteArea_ThenRouteFound()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -455,6 +459,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerActionWithDomainRoute_WhenUseDomainRouteController_ThenRouteFound()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
