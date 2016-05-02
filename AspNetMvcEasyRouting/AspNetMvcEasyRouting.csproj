@@ -79,6 +79,7 @@
     <Compile Include="Routes\Infrastructures\ControllerSectionLocalized.cs" />
     <Compile Include="Routes\Infrastructures\ControllerSectionLocalizedList.cs" />
     <Compile Include="Routes\Infrastructures\FluentLocalizedRoute.cs" />
+    <Compile Include="Routes\Infrastructures\Locale.cs" />
     <Compile Include="Routes\Infrastructures\LocalizedRoute.cs" />
     <Compile Include="Routes\Infrastructures\LocalizedSection.cs" />
     <Compile Include="Routes\Infrastructures\LocalizedSectionList.cs" />

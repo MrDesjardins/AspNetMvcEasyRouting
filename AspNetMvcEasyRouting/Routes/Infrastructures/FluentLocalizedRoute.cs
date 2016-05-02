@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web.Routing;
 
@@ -7,16 +8,30 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 {
     public static class FluentLocalizedRoute
     {
-        public static RouteBuilder BuildRoute()
+        public static ILocalRouteBuilder BuildRoute()
         {
             return new RouteBuilder();
         }
     }
 
-    public class RouteBuilder : IRouteBuilder
+    public interface ILocalRouteBuilder
+    {
+        IRouteBuilderAndILocalRouteBuilder InLocalRouteBuilder(CultureInfo culture);
+        IRouteBuilderAndILocalRouteBuilder InLocalRouteBuilder(CultureInfo culture, string domainUrl);
+
+    }
+
+    public interface IRouteBuilderAndILocalRouteBuilder: IRouteBuilder, ILocalRouteBuilder
+    {
+
+    }
+
+    public class RouteBuilder : IRouteBuilderAndILocalRouteBuilder
     {
         public ControllerSectionLocalizedList ControllerList { get; }
         public AreaSectionLocalizedList AreaList { get; }
+
+        public readonly List<Locale> listSupportedLocale = new List<Locale>();
 
         public RouteBuilder()
         {
@@ -24,14 +39,23 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             this.AreaList = new AreaSectionLocalizedList();
         }
 
-        public IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString)
+        public IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, params string[] controllerLocalizedString)
         {
-            var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new LocalizedSectionList
-                {
-                    new LocalizedSection(LocalizedSection.EN, controllerEnglishLocalizedString)
-                     ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString)
-                }
-                , null);
+            if (this.listSupportedLocale.Count != controllerLocalizedString.Length)
+            {
+                throw new ArgumentException(string.Format("Localized string must be an array of {0} string for ForBilingualController controller {1}"
+                    , this.listSupportedLocale.Count
+                    , controllerName));
+            }
+
+            var section = new LocalizedSectionList();
+            for (int index = 0; index < this.listSupportedLocale.Count; index++)
+            {
+                var supportedLocal = this.listSupportedLocale[index];
+                section.Add(new LocalizedSection(new Locale(supportedLocal.CultureInfo), controllerLocalizedString[index]));
+            }
+
+            var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, section, null);
             this.ControllerList.Add(controllerSectionLocalized);
             if (this.AreaList.Any())
             {
@@ -41,35 +65,55 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             return rbc;
         }
 
-        public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString)
+        public IRouteBuilderArea ForBilingualArea(string areaName, params string[] areaLocalizedString)
         {
-            var areaLocalized = new AreaSectionLocalized(areaName, new LocalizedSectionList
-                {
-                     new LocalizedSection(LocalizedSection.EN, areaEnglishLocalizedString)
-                    ,new LocalizedSection(LocalizedSection.FR, areaFrenchLocalizedString)
-                }
-                , null);
+            if (this.listSupportedLocale.Count != areaLocalizedString.Length)
+            {
+                throw new ArgumentException(string.Format("Localized string must be an array of {0} string for ForBilingualArea area {1}"
+                    , this.listSupportedLocale.Count
+                    , areaName));
+            }
+            var section = new LocalizedSectionList();
+            for (int index = 0; index < this.listSupportedLocale.Count; index++)
+            {
+                var supportedLocal = this.listSupportedLocale[index];
+                section.Add(new LocalizedSection(new Locale(supportedLocal.CultureInfo), areaLocalizedString[index]));
+            }
+            var areaLocalized = new AreaSectionLocalized(areaName, section, null);
             this.AreaList.Add(areaLocalized);
             var rbc = new RouteBuilderArea(areaLocalized, this);
             return rbc;
         }
+
+        public IRouteBuilderAndILocalRouteBuilder InLocalRouteBuilder(CultureInfo culture)
+        {
+            this.listSupportedLocale.Add(new Locale(culture));
+            return this;
+        }
+
+        public IRouteBuilderAndILocalRouteBuilder InLocalRouteBuilder(CultureInfo culture, string domainUrl)
+        {
+            this.listSupportedLocale.Add(new Locale(culture, domainUrl));
+            return this;
+        }
+
     }
 
     public interface IRouteBuilder
     {
-        IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString);
-        IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString);
+        IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, params string[] controllerLocalizedString);
+        IRouteBuilderArea ForBilingualArea(string areaName, params string[] areaLocalizedString);
     }
 
     public interface IRouteAreaBuilder
     {
-        IRouteBuilderController ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString);
+        IRouteBuilderController ForBilingualArea(string areaName, params string[] areaLocalizedString);
     }
 
 
     public interface IRouteBuilderController
     {
-        IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString);
+        IRouteBuilderAction WithBilingualAction(string actionName, params string[] actionLocalizedString);
     }
 
     public class RouteBuilderController : IRouteBuilderControllerAndControllerConfiguration
@@ -101,18 +145,27 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             return this;
         }
 
-        public IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString)
+        public IRouteBuilderAction WithBilingualAction(string actionName, params string[] actionLocalizedString)
         {
+            if (this.routeBuilder.listSupportedLocale.Count != actionLocalizedString.Length)
+            {
+                throw new ArgumentException(string.Format("Localized string must be an array of {0} string for WithBilingualAction action {1}"
+                    , this.routeBuilder.listSupportedLocale.Count
+                    , actionName));
+            }
+
+            var section = new LocalizedSectionList();
+            for (int index = 0; index < this.routeBuilder.listSupportedLocale.Count; index++)
+            {
+                var supportedLocal = this.routeBuilder.listSupportedLocale[index];
+                section.Add(new LocalizedSection(new Locale(supportedLocal.CultureInfo), actionLocalizedString[index]));
+            }
+            
             if (this.currentControllerSection.ActionTranslations == null)
             {
                 this.currentControllerSection.ActionTranslations = new ActionSectionLocalizedList();
             }
-            var currentAction = new ActionSectionLocalized(actionName, new LocalizedSectionList
-            {
-                new LocalizedSection(LocalizedSection.EN, actionEnglishLocalizedString)
-                ,
-                new LocalizedSection(LocalizedSection.FR, actionFrenchLocalizedString)
-            });
+            var currentAction = new ActionSectionLocalized(actionName, section);
             this.currentControllerSection.ActionTranslations.Add(currentAction);
             return new RouteBuilderAction(this.currentControllerSection, currentAction, this.routeBuilder, this);
         }
@@ -120,7 +173,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
     public interface IRouteBuilderArea
     {
-        IRouteBuilderControllerAndControllerConfiguration WithBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString);
+        IRouteBuilderControllerAndControllerConfiguration WithBilingualController(string controllerName, params string[] areaLocalizedString);
     }
 
     public class RouteBuilderArea : IRouteBuilderArea
@@ -134,18 +187,29 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             this.routeBuilder = routeBuilder;
         }
 
-        public IRouteBuilderControllerAndControllerConfiguration WithBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString)
+        public IRouteBuilderControllerAndControllerConfiguration WithBilingualController(string controllerName, params string[] controllerLocalizedString)
         {
+            if (this.routeBuilder.listSupportedLocale.Count != controllerLocalizedString.Length)
+            {
+                throw new ArgumentException(string.Format("Localized string must be an array of {0} string for WithBilingualController controller {1}"
+                    , this.routeBuilder.listSupportedLocale.Count
+                    , controllerName));
+            }
+
+            var section = new LocalizedSectionList();
+            for (int index = 0; index < this.routeBuilder.listSupportedLocale.Count; index++)
+            {
+                var supportedLocal = this.routeBuilder.listSupportedLocale[index];
+                section.Add(new LocalizedSection(new Locale(supportedLocal.CultureInfo), controllerLocalizedString[index]));
+            }
+
+
             if (this.currentControllerSection.ControllerTranslations == null)
             {
                 this.currentControllerSection.ControllerTranslations = new ControllerSectionLocalizedList();
             }
 
-            var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new LocalizedSectionList
-            {
-                 new LocalizedSection(LocalizedSection.EN, controllerEnglishLocalizedString)
-                ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString)
-            }, null);
+            var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, section, null);
 
 
             if (this.routeBuilder.AreaList.Any())
@@ -302,20 +366,34 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             return this.routeBuilderController;
         }
 
-        public IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString)
+        public IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, params string[] controllerLocalizedString)
         {
             this.AddInActionList();
-            return this.routeBuilder.ForBilingualController(controllerName, controllerEnglishLocalizedString, controllerFrenchLocalizedString);
+            return this.routeBuilder.ForBilingualController(controllerName, controllerLocalizedString);
         }
 
-        public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString)
+        public IRouteBuilderArea ForBilingualArea(string areaName, params string[] areaLocalizedString)
         {
             this.AddInActionList();
-            return this.routeBuilder.ForBilingualArea(areaName, areaEnglishLocalizedString, areaFrenchLocalizedString);
+            return this.routeBuilder.ForBilingualArea(areaName, areaLocalizedString);
         }
 
-        public IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, string english, string french)
+        public IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, params string[] localizedToken)
         {
+            if (this.routeBuilder.listSupportedLocale.Count != localizedToken.Length)
+            {
+                throw new ArgumentException(string.Format("Localized string must be an array of {0} string for WithTranslatedTokens token {1}"
+                    , this.routeBuilder.listSupportedLocale.Count
+                    , tokenKey));
+            }
+
+            var section = new LocalizedSectionList();
+            for (int index = 0; index < this.routeBuilder.listSupportedLocale.Count; index++)
+            {
+                var supportedLocal = this.routeBuilder.listSupportedLocale[index];
+                section.Add(new LocalizedSection(new Locale(supportedLocal.CultureInfo), localizedToken[index]));
+            }
+
             if (this.currentAction != null)
             {
                 if (this.currentAction.Tokens == null)
@@ -329,20 +407,16 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
                 }
                 else
                 {
-                    this.currentAction.Tokens.Add(tokenKey, new LocalizedSectionList
-                    {
-                        new LocalizedSection(LocalizedSection.EN, english)
-                        ,new LocalizedSection(LocalizedSection.FR, french)
-                    });
+                    this.currentAction.Tokens.Add(tokenKey, section);
                 }
             }
             return this;
         }
 
-        public IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString)
+        public IRouteBuilderAction WithBilingualAction(string actionName, params string[] actionLocalizedString)
         {
             this.AddInActionList();
-            return this.routeBuilderController.WithBilingualAction(actionName, actionEnglishLocalizedString, actionFrenchLocalizedString);
+            return this.routeBuilderController.WithBilingualAction(actionName, actionLocalizedString);
         }
 
         private void AddInActionList()
@@ -397,7 +471,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
     public interface ITranslatedTokens
     {
-        IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, string english, string french);
+        IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, params string[] tokenTranslated);
     }
 
 

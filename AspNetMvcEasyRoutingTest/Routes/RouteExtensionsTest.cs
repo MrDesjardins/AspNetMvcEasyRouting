@@ -2,14 +2,15 @@
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AspNetMvcEasyRoutingTest.Routes
 {
-    [TestClass]
+    
     public class RouteExtensionsTest
     {
-        [TestMethod]
+        [Fact]
         public void GivenTwoRouteValueDictionary_WhenBothDoesNotContainSameKey_ThenValueAreNotMerged()
         {
             // Arrange
@@ -20,10 +21,10 @@ namespace AspNetMvcEasyRoutingTest.Routes
             valueObject1.Extend(valueObject2);
 
             // Assert
-            Assert.AreEqual("value1", valueObject1["key1"].ToString());
+            Assert.Equal("value1", valueObject1["key1"].ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenTwoRouteValueDictionary_WhenBothContainSameKey_ThenValueAreMerged()
         {
             // Arrange
@@ -34,14 +35,16 @@ namespace AspNetMvcEasyRoutingTest.Routes
             valueObject1.Extend(valueObject2);
 
             // Assert
-            Assert.AreEqual("value1 value2", valueObject1["key1"].ToString());
+            Assert.Equal("value1 value2", valueObject1["key1"].ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenSingleRoute_ThenTwoRoutesAdded()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+                .InLocalRouteBuilder(LocalizedSection.EN)
+                .InLocalRouteBuilder(LocalizedSection.FR)
                 .ForBilingualArea("area1", "area_en", "area_fr")
                 .WithBilingualController("controller1", "controller_en", "controller_fr")
                 .WithBilingualAction("action1", "action_en", "action_fr")
@@ -55,14 +58,16 @@ namespace AspNetMvcEasyRoutingTest.Routes
             routeCollection.AddRoutes(routesInStructure);
 
             // Assert
-            Assert.AreEqual(2, routeCollection.Count);
+            Assert.Equal(2, routeCollection.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenTwoRoutes_ThenFourRoutesAdded()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+                .InLocalRouteBuilder(LocalizedSection.EN)
+                .InLocalRouteBuilder(LocalizedSection.FR)
                 .ForBilingualArea("area1", "area_en", "area_fr")
                 .WithBilingualController("controller1", "controller_en", "controller_fr")
                     .WithBilingualAction("action1", "action_en", "action_fr")
@@ -78,14 +83,16 @@ namespace AspNetMvcEasyRoutingTest.Routes
             routeCollection.AddRoutes(routesInStructure);
 
             // Assert
-            Assert.AreEqual(4, routeCollection.Count);
+            Assert.Equal(4, routeCollection.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenTwoControllerAndThreeRoutes_ThenSixRoutesAdded()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+                .InLocalRouteBuilder(LocalizedSection.EN)
+                .InLocalRouteBuilder(LocalizedSection.FR)
                 .ForBilingualArea("area1", "area_en", "area_fr")
                 .WithBilingualController("controller1", "controller_en", "controller_fr")
                     .WithBilingualAction("action1", "action_en", "action_fr")
@@ -104,14 +111,16 @@ namespace AspNetMvcEasyRoutingTest.Routes
             routeCollection.AddRoutes(routesInStructure);
 
             // Assert
-            Assert.AreEqual(6, routeCollection.Count);
+            Assert.Equal(6, routeCollection.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnControllerAction_WhenTwoControllerAndThreeRoutes_ThenSixRoutesAdded()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+                .InLocalRouteBuilder(LocalizedSection.EN)
+                .InLocalRouteBuilder(LocalizedSection.FR)
                 .ForBilingualController("controller1", "controller_en", "controller_fr")
                     .WithBilingualAction("action1", "action_en", "action_fr")
                     .UseDefaulUrl()
@@ -129,7 +138,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
             routeCollection.AddRoutes(routesInStructure);
 
             // Assert
-            Assert.AreEqual(6, routeCollection.Count);
+            Assert.Equal(6, routeCollection.Count);
         }
 
     }

@@ -3,14 +3,17 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AspNetMvcEasyRoutingTest.Routes
 {
-    [TestClass]
+    
     public class RouteVisitorTest
     {
         public static AreaSectionLocalizedList RoutesArea = FluentLocalizedRoute.BuildRoute()
+            .InLocalRouteBuilder(LocalizedSection.EN)
+            .InLocalRouteBuilder(LocalizedSection.FR)
             .ForBilingualArea("moderator", "Moderation-en", "Moderation")
             .WithBilingualController("Symbol", "Symbol-en", "Symbole")
             .WithBilingualAction("SymbolChangeList", "Symbol-Change-List", "Liste-symbole-renommer")
@@ -29,6 +32,8 @@ namespace AspNetMvcEasyRoutingTest.Routes
             .ToListArea();
 
         public static ControllerSectionLocalizedList RoutesController = FluentLocalizedRoute.BuildRoute()
+            .InLocalRouteBuilder(LocalizedSection.EN)
+            .InLocalRouteBuilder(LocalizedSection.FR)
             .ForBilingualController("Home", "Home", "Demarrer")
             .WithBilingualAction("Index", "Index", "Index")
             .UseEmptyUrl()
@@ -50,29 +55,21 @@ namespace AspNetMvcEasyRoutingTest.Routes
             .WithUrl("{controller}/{action}/{v1}")
             .ToList();
 
-        [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
+        [Fact]
         public void GivenARouteLocalizedVisitor_WhenControllerNotDefined_ThenException()
         {
-            // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", null, "SymbolChangeList", null, null);
-
-            // Act & Assert
-            RoutesArea.AcceptRouteVisitor(visitor);
+            // Arrange & Act & Assert
+            Assert.Throws<ArgumentNullException>(() => new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", null, "SymbolChangeList", null, null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
+        [Fact]
         public void GivenARouteLocalizedVisitor_WhenActionNotDefined_ThenException()
         {
-            // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", "ControllerName", null, null, null);
-
-            // Act & Assert
-            RoutesArea.AcceptRouteVisitor(visitor);
+            // Arrange & Act & Assert
+            Assert.Throws<ArgumentNullException>(() => new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", "ControllerName", null, null, null));
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenAreaControllerActionUnique_ThenReturnThisUniqueRoute()
         {
             // Arrange
@@ -83,10 +80,10 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual("Moderation-en/Symbol-en/Symbol-Change-List", result);
+            Assert.Equal("Moderation-en/Symbol-en/Symbol-Change-List", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenAreaControllerActionNotUniqueButValueUnique_ThenReturnRouteWithValue()
         {
             // Arrange
@@ -97,10 +94,10 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual("Moderation-en/Symbol-en/Symbol-Change-List/{value1}", result);
+            Assert.Equal("Moderation-en/Symbol-en/Symbol-Change-List/{value1}", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenAreaControllerActionValueNotUniqueButTokenUnique_ThenReturnRouteWithToken()
         {
             // Arrange
@@ -111,11 +108,11 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual(result, "Moderation-en/Symbol-en/Symbol-Change-List/{value1}/tokenen");
+            Assert.Equal(result, "Moderation-en/Symbol-en/Symbol-Change-List/{value1}/tokenen");
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenNoArea_ThenReturnRouteWithoutArea()
         {
             // Arrange
@@ -126,10 +123,10 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual("c-en/a-en", result);
+            Assert.Equal("c-en/a-en", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenNoAreaWithDefaultValue_ThenReturnRouteWithoutAreaWithDefaultValue()
         {
             // Arrange
@@ -140,10 +137,10 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual("Profile-en", result);
+            Assert.Equal("Profile-en", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSet_ThenReturnRouteWithoutAreaWithDefaultValue()
         {
             // Arrange
@@ -154,10 +151,10 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual("Profile-en/{username}", result);
+            Assert.Equal("Profile-en/{username}", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSetNotEmpty_ThenReturnRouteWithoutAreaWithDefaultValue()
         {
             // Arrange
@@ -168,12 +165,11 @@ namespace AspNetMvcEasyRoutingTest.Routes
 
             // Assert
             var result = visitor.Result().FinalUrl();
-            Assert.AreEqual("c-en/a2-en/boom", result);
+            Assert.Equal("c-en/a2-en/boom", result);
         }
 
 
-        [TestMethod]
-        [ExpectedException(typeof (RouteNotFound))]
+        [Fact]
         public void GivenARouteToVisit_WhenNoFound_ThenThrowException()
         {
             // Arrange
@@ -183,7 +179,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
             RoutesController.AcceptRouteVisitor(visitor);
 
             // Assert
-            visitor.Result().FinalUrl();
+            Assert.Throws<RouteNotFound>(() => visitor.Result().FinalUrl());
         }
     }
 }

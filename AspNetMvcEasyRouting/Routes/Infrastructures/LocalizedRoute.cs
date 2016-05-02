@@ -12,19 +12,19 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 {
     public class LocalizedRoute : Route
     {
-        public CultureInfo Culture { get; protected set; }
+        public Locale Locale { get; protected set; }
         public ActionSectionLocalized ActionTranslation { get; }
         public ControllerSectionLocalized ControllerTranslation { get; }
         public AreaSectionLocalized AreaSectionLocalized { get; }
 
         public LocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url
-            , RouteValueDictionary defaults, RouteValueDictionary constraints, CultureInfo culture)
-            : this(areaSectionLocalized, controllerTranslation, actionTranslation, url, defaults, constraints, null, new MvcRouteHandler(), culture)
+            , RouteValueDictionary defaults, RouteValueDictionary constraints, Locale locale)
+            : this(areaSectionLocalized, controllerTranslation, actionTranslation, url, defaults, constraints, null, new MvcRouteHandler(), locale)
         {
         }
 
         public LocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url
-            , RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler, CultureInfo culture)
+            , RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler, Locale locale)
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
             this.AreaSectionLocalized = areaSectionLocalized;
@@ -32,26 +32,26 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
             if (controllerTranslation == null)
             {
-                throw new ArgumentNullException("controllerTranslation");
+                throw new ArgumentNullException(nameof(controllerTranslation));
             }
             this.ControllerTranslation = controllerTranslation;
 
             if (actionTranslation == null)
             {
-                throw new ArgumentNullException("actionTranslation");
+                throw new ArgumentNullException(nameof(actionTranslation));
             }
             this.ActionTranslation = actionTranslation;
 
             if (url == null)
             {
-                throw new ArgumentNullException("url");
+                throw new ArgumentNullException(nameof(url));
             }
 
-            if (culture == null)
+            if (locale == null)
             {
-                throw new ArgumentNullException("culture");
+                throw new ArgumentNullException(nameof(locale));
             }
-            this.Culture = culture;
+            this.Locale = locale;
 
             if (dataTokens == null)
             {
@@ -76,19 +76,14 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             {
                 if (httpContext.Request.Url.IsAbsoluteUri && httpContext.Request.Url.AbsolutePath == "/")
                 {
-                    if (httpContext.Request.Url.Host == "http://yourdomain.com" || httpContext.Request.Url.Host == "localhost")
+                    if ((this.Locale.DomainUrl != null && httpContext.Request.Url.Host != this.Locale.DomainUrl))
                     {
-                        this.Culture = LocalizedSection.FR;
-                    }
-                    else
-                    {
-                        this.Culture = LocalizedSection.EN;
+                        return null; // For domain Url, if we are not the one specified we cancel the route
                     }
                 }
             }
-            //this.Culture.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";//http://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx
-            Thread.CurrentThread.CurrentCulture = this.Culture;
-            Thread.CurrentThread.CurrentUICulture = this.Culture;
+            Thread.CurrentThread.CurrentCulture = this.Locale.CultureInfo;
+            Thread.CurrentThread.CurrentUICulture = this.Locale.CultureInfo;
             return routeData;
         }
 
@@ -111,7 +106,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
         {
             var currentThreadCulture = Thread.CurrentThread.CurrentUICulture;
             //First step is to avoid route in the wrong culture
-            if (this.Culture.Name != currentThreadCulture.Name)
+            if (this.Locale.CultureInfo.Name != currentThreadCulture.Name)
             {
                 return null;
             }
@@ -124,21 +119,21 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             if (this.AreaSectionLocalized != null && values[Constants.AREA] != null) //If added in the RouteValue, it will be just there later during GetVirtualPath (merge from MVC's route creation code)
             {
                 var valueToken = values[Constants.AREA];
-                areaTranslated = this.AreaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name);
+                areaTranslated = this.AreaSectionLocalized.Translation.FirstOrDefault(d => d.Locale.CultureInfo.Name == currentThreadCulture.Name);
                 replaceRoutingValues = areaTranslated != null && areaTranslated.TranslatedValue == valueToken;
             }
 
             if (replaceRoutingValues && this.ControllerTranslation != null)
             {
                 var valueToken = values[Constants.CONTROLLER];
-                controllerTranslated = this.ControllerTranslation.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name);
+                controllerTranslated = this.ControllerTranslation.Translation.FirstOrDefault(d => d.Locale.CultureInfo.Name == currentThreadCulture.Name);
                 replaceRoutingValues &= controllerTranslated != null && controllerTranslated.TranslatedValue == valueToken;
             }
 
             if (replaceRoutingValues && this.ActionTranslation != null)
             {
                 var valueToken = values[Constants.ACTION];
-                actionTranslated = this.ActionTranslation.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name);
+                actionTranslated = this.ActionTranslation.Translation.FirstOrDefault(d => d.Locale.CultureInfo.Name == currentThreadCulture.Name);
                 replaceRoutingValues &= actionTranslated != null && actionTranslated.TranslatedValue == valueToken;
             }
 
@@ -266,7 +261,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             {
                 foreach (var key in tokens.Keys)
                 {
-                    var tokenInCurrentCulture = tokens[key].FirstOrDefault(f => f.CultureInfo.Name == this.Culture.Name);
+                    var tokenInCurrentCulture = tokens[key].FirstOrDefault(f => f.Locale.CultureInfo.Name == this.Locale.CultureInfo.Name);
                     if (tokenInCurrentCulture != null)
                     {
                         var toReplace = "{" + key + "}";

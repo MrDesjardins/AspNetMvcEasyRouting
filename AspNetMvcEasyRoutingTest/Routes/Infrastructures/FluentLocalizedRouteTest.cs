@@ -3,15 +3,20 @@ using System.Linq;
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
 {
-    [TestClass]
-    public class FluentLocalizedRouteTest:RouteTestBase
+    
+    public class FluentLocalizedRouteTest:RouteTestBase, IClassFixture<RouteFixture>
     {
 
-        [TestMethod]
+        public FluentLocalizedRouteTest(RouteFixture routeFixture) : base(routeFixture)
+        {
+        }
+
+        [Fact]
         public void GivenUrl_WhenDoesnotExist_ThenNull()
         {
             // Arrange
@@ -21,14 +26,16 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/123").RouteData;
 
             // Assert
-            Assert.IsNull(routeData);
+            Assert.Null(routeData);
         }
 
-        [TestMethod]
-        public void GivenAnAreaControllerAction_WhenNormalRoute_ThenRouteFound()
+        [Fact]
+        public void GivenAnAreaControllerAction_WhenDefineLocalization_Then()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR, "http://website.fr")
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -41,18 +48,46 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
+        public void GivenAnAreaControllerAction_WhenNormalRoute_ThenRouteFound()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForBilingualArea("area1", "area_en", "area_fr")
+              .WithBilingualController("controller1", "controller_en", "controller_fr")
+              .WithBilingualAction("action1", "action_en", "action_fr")
+              .WithUrl("{area}/{controller}/{action}")
+              .ToListArea()
+            ;
+            RouteTable.Routes.AddRoutes(routesInStructure);
+
+            // Act
+            RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
+
+            // Assert
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+        }
+
+        [Fact]
         public void GivenAnAreaTwoControllerAction_WhenNormalRoute_ThenRouteFound()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualController("controller1", "controller_en", "controller_fr")
                 .WithBilingualAction("action1", "action_en", "action_fr")
                 .WithUrl("{controller}/{action}")
@@ -67,18 +102,20 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("controller_en/action_en").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.IsNull(routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Null(routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenDefaultValueSet_ThenRouteHasDefaultValue()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -92,19 +129,22 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/123").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual("123", routeData.Values["pagevalue"]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal("123", routeData.Values["pagevalue"]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenDefaultValueAsObjectSet_ThenRouteHasDefaultValue()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -118,19 +158,21 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/123").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual("123", routeData.Values["pagevalue"]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal("123", routeData.Values["pagevalue"]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenOneMirrorUrl_ThenRouteRetrieved()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -144,18 +186,20 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("boom").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenTwoMirrorUrl_ThenRouteCanBeRetrievedIn3DifferentWays()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -172,17 +216,19 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData3 = base.GetRouteDataForUrl("area_en/controller_en/action_en/page").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData1);
-            Assert.IsNotNull(routeData2);
-            Assert.IsNotNull(routeData3);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData1);
+            Assert.NotNull(routeData2);
+            Assert.NotNull(routeData3);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenToken_ThenRouteWithTokenTranslated()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -197,18 +243,21 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/token_en").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenNamespace_ThenRouteWithNamespace()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .AssociateToNamespace("namespace1")
@@ -223,20 +272,23 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual("namespace1", ((string[]) routeData.DataTokens["Namespaces"])[0]);
-            Assert.IsFalse(Convert.ToBoolean(routeData.DataTokens["UseNamespaceFallback"]));
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal("namespace1", ((string[]) routeData.DataTokens["Namespaces"])[0]);
+            Assert.False(Convert.ToBoolean(routeData.DataTokens["UseNamespaceFallback"]));
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenTwoNamespace_ThenRouteWithNamespace()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .AssociateToNamespace("namespace1")
@@ -252,22 +304,25 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
             var namespaces = (string[])routeData.DataTokens["Namespaces"];
-            Assert.IsTrue(namespaces.Any(d => d == "namespace1"));
-            Assert.IsTrue(namespaces.Any(d => d == "namespace2"));
-            Assert.IsFalse(Convert.ToBoolean(routeData.DataTokens["UseNamespaceFallback"]));
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.True(namespaces.Any(d => d == "namespace1"));
+            Assert.True(namespaces.Any(d => d == "namespace2"));
+            Assert.False(Convert.ToBoolean(routeData.DataTokens["UseNamespaceFallback"]));
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenConstaintValid_ThenRouteFound()
         {
             // Arrange
+            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -281,19 +336,21 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/1").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual("1", routeData.Values["page"]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal("1", routeData.Values["page"]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenConstaintNotValid_ThenRouteFound()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -307,14 +364,16 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/asd").RouteData;
 
             // Assert
-            Assert.IsNull(routeData);
+            Assert.Null(routeData);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenConstaintWithObject_ThenRouteFound()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -328,19 +387,21 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/1").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual("1", routeData.Values["page"]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal("1", routeData.Values["page"]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenMoreThanOneArea_ThenRouteFound()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -357,19 +418,21 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("area_en2/controller2_en/action2_en/1").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area2", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller2", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action2", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual("1", routeData.Values["page"]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area2", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller2", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action2", routeData.Values[Constants.ACTION]);
+            Assert.Equal("1", routeData.Values["page"]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerActionWithDomainRoute_WhenUseDomainRouteArea_ThenRouteFound()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -382,17 +445,19 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("http://mywebsite.com").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("area1", routeData.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("area1", routeData.Values[Constants.AREA]);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerActionWithDomainRoute_WhenUseDomainRouteController_ThenRouteFound()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
               .UseEmptyUrl()
@@ -404,18 +469,20 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData = base.GetRouteDataForUrl("http://mywebsite.com").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.AreEqual("controller1", routeData.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", routeData.Values[Constants.ACTION]);
-            Assert.AreEqual(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Assert.NotNull(routeData);
+            Assert.Equal("controller1", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GivenAnAreaControllerAction_WhenTokenRepeated_ThenRouteIgnoreLastOne()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
               .ForBilingualArea("area1", "area_en", "area_fr")
               .WithBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
@@ -433,9 +500,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             RouteData routeData3 = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/token_3en").RouteData;
 
             // Assert
-            Assert.IsNotNull(routeData);
-            Assert.IsNull(routeData2);
-            Assert.IsNull(routeData3);
+            Assert.NotNull(routeData);
+            Assert.NotNull(routeData2);
+            Assert.NotNull(routeData3);
         }
+
     }
 }

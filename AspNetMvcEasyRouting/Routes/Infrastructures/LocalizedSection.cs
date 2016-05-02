@@ -6,14 +6,14 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
     {
         public const string EN_NAME = "en-US";
         public const string FR_NAME = "fr-CA";
-        public static CultureInfo EN = CultureInfo.GetCultureInfo(EN_NAME);
-        public static CultureInfo FR = CultureInfo.GetCultureInfo(FR_NAME);
-        public CultureInfo CultureInfo { get; set; }
+        public static CultureInfo EN = new CultureInfo(EN_NAME);
+        public static CultureInfo FR = new CultureInfo(FR_NAME);
+        public Locale Locale { get; set; }
         public string TranslatedValue { get; set; }
 
-        public LocalizedSection(CultureInfo culture, string translatedValue)
+        public LocalizedSection(Locale culture, string translatedValue)
         {
-            this.CultureInfo = culture;
+            this.Locale = culture;
             this.TranslatedValue = translatedValue;
         }
 

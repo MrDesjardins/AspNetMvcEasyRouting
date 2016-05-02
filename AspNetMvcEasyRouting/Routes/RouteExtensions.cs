@@ -68,10 +68,10 @@ namespace AspNetMvcEasyRouting.Routes
 
                     foreach (var actionTranslation in action.Translation)
                     {
-                        var currentCulture = actionTranslation.CultureInfo.Name;
+                        var currentCulture = actionTranslation.Locale.CultureInfo.Name;
                       
                         //Controller
-                        var controllerTranslation = controller.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentCulture);
+                        var controllerTranslation = controller.Translation.FirstOrDefault(d => d.Locale.CultureInfo.Name == currentCulture);
 
                         //Start with action by handling the case of anonymous object for action or RouteValue. We wanta RouteValueDictionary at the end.
                         RouteValueDictionary values = null;
@@ -86,10 +86,10 @@ namespace AspNetMvcEasyRouting.Routes
 
                         //If the area is defined, we look up to see if we have one with the current Culture. If so, we add it to the route definition; else Null.
                         LocalizedSection areaTranslation = null;
-                        if (areaSectionLocalized != null && areaSectionLocalized.Translation.Any(d => d.CultureInfo.Name == currentCulture))
+                        if (areaSectionLocalized != null && areaSectionLocalized.Translation.Any(d => d.Locale.CultureInfo.Name == currentCulture))
                         {
                             values[Constants.AREA] = areaSectionLocalized.AreaName;
-                            areaTranslation = areaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentCulture);
+                            areaTranslation = areaSectionLocalized.Translation.FirstOrDefault(d => d.Locale.CultureInfo.Name == currentCulture);
                         }
                         values[Constants.CONTROLLER] = controller.ControllerName;
                         values[Constants.ACTION] = action.ActionName;
@@ -116,7 +116,7 @@ namespace AspNetMvcEasyRouting.Routes
                             , newUrl
                             , values
                             , constraints
-                            , actionTranslation.CultureInfo
+                            , actionTranslation.Locale
                             )
                         );
                     }

@@ -4,40 +4,46 @@ using System.Globalization;
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
 {
-    [TestClass]
+    
     public class LocalizedRouteTest : RouteTestBase
     {
-        [TestMethod]
+        private Locale enlishLocal;
+        public LocalizedRouteTest(RouteFixture routeFixture):base(routeFixture)
+        {
+            this.enlishLocal = new Locale(new CultureInfo("en-US"));
+        }
+        [Fact]
         public void GivenANewLocalizedRoute_WhenEveryParameterNull_ThenDefaultValuesUsed()
         {
             // Arrange
 
 
             // Act
-            var exception = TestExtensions.ThrownAndReturn<ArgumentNullException>(() => { var local = new LocalizedRoute(null, null, null, null, null, null, null); });
+            var exception = Assert.Throws<ArgumentNullException>(() => { var local = new LocalizedRoute(null, null, null, null, null, null, null); });
 
             // Assert
-            Assert.AreEqual("controllerTranslation", exception.ParamName);
+            Assert.Equal("controllerTranslation", exception.ParamName);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenANewLocalizedRoute_WhenActionParameterNull_ThenThrowException()
         {
             // Arrange
             var controller = this.GetEmptyControllerSectionLocalized();
 
             // Act
-            var exception = TestExtensions.ThrownAndReturn<ArgumentNullException>(() => { var local = new LocalizedRoute(null, controller, null, null, null, null, null); });
+            var exception = Assert.Throws<ArgumentNullException >(() => { var local = new LocalizedRoute(null, controller, null, null, null, null, null); });
 
             // Assert
-            Assert.AreEqual("actionTranslation", exception.ParamName);
+            Assert.Equal("actionTranslation", exception.ParamName);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenANewLocalizedRoute_WhenUrlParameterNull_ThenThrowException()
         {
             // Arrange
@@ -45,13 +51,13 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var action = this.GetEmptyActionSectionLocalized();
 
             // Act
-            var exception = TestExtensions.ThrownAndReturn<ArgumentNullException>(() => { var local = new LocalizedRoute(null, controller, action, null, null, null, null); });
+            var exception = Assert.Throws<ArgumentNullException>(() => { var local = new LocalizedRoute(null, controller, action, null, null, null, null); });
 
             // Assert
-            Assert.AreEqual("url", exception.ParamName);
+            Assert.Equal("url", exception.ParamName);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenANewLocalizedRoute_WhenCultureParameterNull_ThenThrowException()
         {
             // Arrange
@@ -59,13 +65,13 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var action = this.GetEmptyActionSectionLocalized();
 
             // Act
-            var exception = TestExtensions.ThrownAndReturn<ArgumentNullException>(() => { var local = new LocalizedRoute(null, controller, action, "url", null, null, null); });
+            var exception = Assert.Throws<ArgumentNullException>(() => { var local = new LocalizedRoute(null, controller, action, "url", null, null, null); });
 
             // Assert
-            Assert.AreEqual("culture", exception.ParamName);
+            Assert.Equal("local", exception.ParamName);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenANewLocalizedRoute_WhenDataTokenParameterNull_ThenDataTokenInitialize()
         {
             // Arrange
@@ -73,14 +79,14 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var action = this.GetEmptyActionSectionLocalized();
 
             // Act
-            var local = new LocalizedRoute(null, controller, action, "url", null, null, null, null, new CultureInfo("en-us"));
+            var local = new LocalizedRoute(null, controller, action, "url", null, null, null, null, this.enlishLocal);
 
 
             // Assert
-            Assert.IsNotNull(local.DataTokens);
+            Assert.NotNull(local.DataTokens);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenANewLocalizedRoute_WhenRouteHasArea_ThenDataTokenHasArea()
         {
             // Arrange
@@ -91,15 +97,15 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             defaultValues.Add(Constants.AREA, areaName);
 
             // Act
-            var local = new LocalizedRoute(null, controller, action, "url", defaultValues, null, null, null, new CultureInfo("en-us"));
+            var local = new LocalizedRoute(null, controller, action, "url", defaultValues, null, null, null, this.enlishLocal);
 
 
             // Assert
-            Assert.IsNotNull(local.DataTokens);
-            Assert.AreEqual(areaName, local.DataTokens[Constants.AREA]);
+            Assert.NotNull(local.DataTokens);
+            Assert.Equal(areaName, local.DataTokens[Constants.AREA]);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_WhenReplaceTokensWithNull_ThenNoReplacement()
         {
             // Arrange
@@ -111,10 +117,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.ReplaceTokens(url, tokens);
 
             // Assert
-            Assert.AreEqual(url, urlAfterReplace);
+            Assert.Equal(url, urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_WhenReplaceTokensWithEmpty_ThenNoReplacement()
         {
             // Arrange
@@ -126,42 +132,42 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.ReplaceTokens(url, tokens);
 
             // Assert
-            Assert.AreEqual(url, urlAfterReplace);
+            Assert.Equal(url, urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_WhenReplaceTokensWithTokenButNotrightCulture_ThenNoReplacement()
         {
             // Arrange
             var local = this.GetLocalizedRoute();
             var url = "/one/{two}/three";
             var tokens = new Dictionary<string, LocalizedSectionList>();
-            tokens.Add("two", new LocalizedSectionList {new LocalizedSection(new CultureInfo("ja-jp"), "deux")});
+            tokens.Add("two", new LocalizedSectionList {new LocalizedSection(new Locale(new CultureInfo("ja-jp")), "deux")});
 
             // Act
             var urlAfterReplace = local.ReplaceTokens(url, tokens);
 
             // Assert
-            Assert.AreEqual(url, urlAfterReplace);
+            Assert.Equal(url, urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_WhenReplaceTokensWithTokenWithRightCulture_ThenReplacement()
         {
             // Arrange
             var local = this.GetLocalizedRoute();
             var url = "/one/{two}/three";
             var tokens = new Dictionary<string, LocalizedSectionList>();
-            tokens.Add("two", new LocalizedSectionList {new LocalizedSection(new CultureInfo("en-us"), "deux")});
+            tokens.Add("two", new LocalizedSectionList {new LocalizedSection(new Locale(new CultureInfo("en-us")), "deux")});
 
             // Act
             var urlAfterReplace = local.ReplaceTokens(url, tokens);
 
             // Assert
-            Assert.AreEqual("/one/deux/three", urlAfterReplace);
+            Assert.Equal("/one/deux/three", urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAddKeyValueToUrlAsQueryString_WhenUrlNull_ThenNothingHappen()
         {
             // Arrange
@@ -172,10 +178,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.AddKeyValueToUrlAsQueryString(url, "key1", "value");
 
             // Assert
-            Assert.AreEqual(url, urlAfterReplace);
+            Assert.Equal(url, urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAddKeyValueToUrlAsQueryString_WhenKeyNull_ThenNothingHappen()
         {
             // Arrange
@@ -186,11 +192,11 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.AddKeyValueToUrlAsQueryString(url, null, "value");
 
             // Assert
-            Assert.AreEqual(url, urlAfterReplace);
+            Assert.Equal(url, urlAfterReplace);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAddKeyValueToUrlAsQueryString_WhenValueNull_ThenQueryStringAdded()
         {
             // Arrange
@@ -201,11 +207,11 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.AddKeyValueToUrlAsQueryString(url, "key1", null);
 
             // Assert
-            Assert.AreEqual(url + "?key1=", urlAfterReplace);
+            Assert.Equal(url + "?key1=", urlAfterReplace);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAddKeyValueToUrlAsQueryString_WhenNoQueryStringInUrl_ThenQueryStringAddedWithQuestionMark()
         {
             // Arrange
@@ -216,10 +222,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.AddKeyValueToUrlAsQueryString(url, "key1", "value1");
 
             // Assert
-            Assert.AreEqual(url + "?key1=value1", urlAfterReplace);
+            Assert.Equal(url + "?key1=value1", urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAddKeyValueToUrlAsQueryString_WhenQueryStringInUrl_ThenQueryStringAddedWithAmpersand()
         {
             // Arrange
@@ -230,10 +236,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.AddKeyValueToUrlAsQueryString(url, "key1", "value1");
 
             // Assert
-            Assert.AreEqual(url + "&key1=value1", urlAfterReplace);
+            Assert.Equal(url + "&key1=value1", urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPath_WhenQueryStringInUrl_ThenQueryStringAddedWithAmpersand()
         {
             // Arrange
@@ -244,10 +250,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var urlAfterReplace = local.AddKeyValueToUrlAsQueryString(url, "key1", "value1");
 
             // Assert
-            Assert.AreEqual(url + "&key1=value1", urlAfterReplace);
+            Assert.Equal(url + "&key1=value1", urlAfterReplace);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithRoutes_WhenCurrentVirtualPathIsNull_ThenNothingHappen()
         {
             // Arrange
@@ -258,10 +264,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithRoutes(virtualDataPath, new RouteValueDictionary());
 
             // Assert
-            Assert.AreEqual(virtualDataPath, virtualDataPathAfter);
+            Assert.Equal(virtualDataPath, virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithRoutes_WhenRouteNull_ThenNothingHappen()
         {
             // Arrange
@@ -272,10 +278,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithRoutes(virtualDataPath, null);
 
             // Assert
-            Assert.AreEqual(virtualDataPath, virtualDataPathAfter);
+            Assert.Equal(virtualDataPath, virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithRoutes_WhenRouteItemIsFoundInUrl_ThenRouteChanged()
         {
             // Arrange
@@ -288,10 +294,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithRoutes(virtualDataPath, routeValues);
 
             // Assert
-            Assert.AreEqual("urlhere/xxxxx/andthere", virtualDataPathAfter);
+            Assert.Equal("urlhere/xxxxx/andthere", virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithRoutes_WhenRouteItemIsNotInUrl_ThenQueryStringAdded()
         {
             // Arrange
@@ -304,11 +310,11 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithRoutes(virtualDataPath, routeValues);
 
             // Assert
-            Assert.AreEqual("urlhere/nothing/andthere?token1=xxxxx", virtualDataPathAfter);
+            Assert.Equal("urlhere/nothing/andthere?token1=xxxxx", virtualDataPathAfter);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithRoutes_WhenRouteItemIsNotInUrlAndOneInSide_ThenQueryStringAddedAndRouteChanged()
         {
             // Arrange
@@ -322,11 +328,11 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithRoutes(virtualDataPath, routeValues);
 
             // Assert
-            Assert.AreEqual("urlhere/xxxxx/andthere?token2=yyyyy", virtualDataPathAfter);
+            Assert.Equal("urlhere/xxxxx/andthere?token2=yyyyy", virtualDataPathAfter);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithActionTranslationDefaultValues_WhenUrlIsNull_ThenNothingDone()
         {
             // Arrange
@@ -337,10 +343,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithActionTranslationDefaultValues(virtualDataPath, new RouteValueDictionary());
 
             // Assert
-            Assert.AreEqual(virtualDataPath, virtualDataPathAfter);
+            Assert.Equal(virtualDataPath, virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithActionTranslationDefaultValues_WhenRouteIsNull_ThenNothingDone()
         {
             // Arrange
@@ -351,10 +357,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithActionTranslationDefaultValues(virtualDataPath, null);
 
             // Assert
-            Assert.AreEqual(virtualDataPath, virtualDataPathAfter);
+            Assert.Equal(virtualDataPath, virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithActionTranslationDefaultValues_WhenDefaultValueInUrl_ThenReplaced()
         {
             // Arrange
@@ -367,10 +373,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithActionTranslationDefaultValues(virtualDataPath, routeValues);
 
             // Assert
-            Assert.AreEqual("urlhere/xox", virtualDataPathAfter);
+            Assert.Equal("urlhere/xox", virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithActionTranslationDefaultValues_WhenDefaultValueNotInUrl_ThenNotReplaced()
         {
             // Arrange
@@ -383,10 +389,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithActionTranslationDefaultValues(virtualDataPath, routeValues);
 
             // Assert
-            Assert.AreEqual("urlhere/{token}", virtualDataPathAfter);
+            Assert.Equal("urlhere/{token}", virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithActionTranslationDefaultValues_WhenDefaultValueInUrlAndInRoute_ThenNotReplaced()
         {
             // Arrange
@@ -400,10 +406,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithActionTranslationDefaultValues(virtualDataPath, routeValues);
 
             // Assert
-            Assert.AreEqual("urlhere/{token1}", virtualDataPathAfter);
+            Assert.Equal("urlhere/{token1}", virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithDefaultValues_WhenDefaultValueNotInUrl_ThenUseDefaultFromRouteAndReplace()
         {
             // Arrange
@@ -417,10 +423,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithDefaultValues(virtualDataPath);
 
             // Assert
-            Assert.AreEqual("urlhere/ok", virtualDataPathAfter);
+            Assert.Equal("urlhere/ok", virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForAdjustVirtualPathWithDefaultValues_WhenDefaultValueNotFound_ThenNotReplacement()
         {
             // Arrange
@@ -434,10 +440,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = local.AdjustVirtualPathWithDefaultValues(virtualDataPath);
 
             // Assert
-            Assert.AreEqual("urlhere/{token1}", virtualDataPathAfter);
+            Assert.Equal("urlhere/{token1}", virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForGetVirtualPath_WhenPathNotFound_ThenReturnNull()
         {
             // Arrange
@@ -451,10 +457,10 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = stub.GetVirtualPath(requestContext.HttpContext.Request.RequestContext, routeValues);
 
             // Assert
-            Assert.IsNull(virtualDataPathAfter);
+            Assert.Null(virtualDataPathAfter);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForGetVirtualPath_WhenRouteNotAllRouteValueInSameCulture_ThenRouteNotChanged()
         {
             // Arrange
@@ -464,7 +470,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var areaName = "testarea";
             var defaultValues = new RouteValueDictionary();
             defaultValues.Add(Constants.AREA, areaName);
-            var stub = new StubbedLocalizedRoute(null, controller, action, "{area}/{controller}/{action}", defaultValues, null, null, null, new CultureInfo("en-us"));
+            var stub = new StubbedLocalizedRoute(null, controller, action, "{area}/{controller}/{action}", defaultValues, null, null, null, this.enlishLocal);
             var requestContext = this.GetRouteDataForUrl("{area}/{controller}/{action}");
             var virtualDataPath = new VirtualPathData(stub, "");
             var routeValues = new RouteValueDictionary();
@@ -477,12 +483,12 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = stub.GetVirtualPath(requestContext.HttpContext.Request.RequestContext, routeValues);
 
             // Assert
-            Assert.AreEqual(areaName, stub.Values[Constants.AREA]);
-            Assert.AreEqual(controller.ControllerName, stub.Values[Constants.CONTROLLER]);
-            Assert.AreEqual(action.ActionName, stub.Values[Constants.ACTION]);
+            Assert.Equal(areaName, stub.Values[Constants.AREA]);
+            Assert.Equal(controller.ControllerName, stub.Values[Constants.CONTROLLER]);
+            Assert.Equal(action.ActionName, stub.Values[Constants.ACTION]);
         }
 
-        [TestMethod]
+        [Fact]
         public void GivenALocalizedRoute_ForGetVirtualPath_WhenRouteFoundTranslationInSameCulture_ThenRouteChange()
         {
             // Arrange
@@ -492,7 +498,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var areaName = "testarea";
             var defaultValues = new RouteValueDictionary();
             defaultValues.Add(Constants.AREA, areaName);
-            var stub = new StubbedLocalizedRoute(area, controller, action, "{area}/{controller}/{action}", defaultValues, null, null, null, new CultureInfo("en-us"));
+            var stub = new StubbedLocalizedRoute(area, controller, action, "{area}/{controller}/{action}", defaultValues, null, null, null, this.enlishLocal);
             var requestContext = this.GetRouteDataForUrl("{area}/{controller}/{action}");
             var virtualDataPath = new VirtualPathData(stub, "");
             var routeValues = new RouteValueDictionary();
@@ -505,29 +511,29 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var virtualDataPathAfter = stub.GetVirtualPath(requestContext.HttpContext.Request.RequestContext, routeValues);
 
             // Assert
-            Assert.AreEqual("area1", stub.Values[Constants.AREA]);
-            Assert.AreEqual("controller1", stub.Values[Constants.CONTROLLER]);
-            Assert.AreEqual("action1", stub.Values[Constants.ACTION]);
+            Assert.Equal("area1", stub.Values[Constants.AREA]);
+            Assert.Equal("controller1", stub.Values[Constants.CONTROLLER]);
+            Assert.Equal("action1", stub.Values[Constants.ACTION]);
         }
 
         private AreaSectionLocalized GetEmptyAreaSectionLocalized(string english = null, string french = null)
         {
             return new AreaSectionLocalized("myareaname"
-                , new LocalizedSectionList {new LocalizedSection(LocalizedSection.EN, english), new LocalizedSection(LocalizedSection.EN, french)}
+                , new LocalizedSectionList {new LocalizedSection(new Locale(LocalizedSection.EN), english), new LocalizedSection(new Locale(LocalizedSection.EN), french)}
                 , null);
         }
 
         private ControllerSectionLocalized GetEmptyControllerSectionLocalized(string english = null, string french = null)
         {
             return new ControllerSectionLocalized("mycontrollername"
-                , new LocalizedSectionList {new LocalizedSection(LocalizedSection.EN, english), new LocalizedSection(LocalizedSection.EN, french)}
+                , new LocalizedSectionList {new LocalizedSection(new Locale(LocalizedSection.EN), english), new LocalizedSection(new Locale(LocalizedSection.EN), french)}
                 , null);
         }
 
         private ActionSectionLocalized GetEmptyActionSectionLocalized(string english = null, string french = null)
         {
             return new ActionSectionLocalized("myactioname"
-                , new LocalizedSectionList {new LocalizedSection(LocalizedSection.EN, english), new LocalizedSection(LocalizedSection.EN, french)}
+                , new LocalizedSectionList {new LocalizedSection(new Locale(LocalizedSection.EN), english), new LocalizedSection(new Locale(LocalizedSection.EN), french)}
                 , null);
         }
 
@@ -538,7 +544,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var areaName = "testarea";
             var defaultValues = new RouteValueDictionary();
             defaultValues.Add(Constants.AREA, areaName);
-            var local = new LocalizedRoute(null, controller, action, "url", defaultValues, null, null, null, new CultureInfo("en-us"));
+            var local = new LocalizedRoute(null, controller, action, "url", defaultValues, null, null, null, this.enlishLocal);
             return local;
         }
 
@@ -549,7 +555,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             var areaName = "testarea";
             var defaultValues = new RouteValueDictionary();
             defaultValues.Add(Constants.AREA, areaName);
-            var local = new StubbedLocalizedRoute(null, controller, action, "url", defaultValues, null, null, null, new CultureInfo("en-us"));
+            var local = new StubbedLocalizedRoute(null, controller, action, "url", defaultValues, null, null, null, this.enlishLocal);
             return local;
         }
 
@@ -572,7 +578,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         //public void GivenALocalizedRoute_ForGetLocalizedUrl_WhenRouteAreaControllerAction_ThenUrlLocalized()
 
 
-        //[TestMethod]
+        //[Fact]
     }
 
     public class StubbedLocalizedRoute : LocalizedRoute
@@ -581,7 +587,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public RouteValueDictionary Values { get; set; }
 
         public StubbedLocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url
-            , RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler, CultureInfo culture)
+            , RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler, Locale culture)
             : base(areaSectionLocalized, controllerTranslation, actionTranslation, url, defaults, constraints, dataTokens, routeHandler, culture)
         {
         }

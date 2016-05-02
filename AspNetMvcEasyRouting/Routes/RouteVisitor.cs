@@ -104,7 +104,7 @@ namespace AspNetMvcEasyRouting.Routes
         {
             if (element.AreaName == this.area)
             {
-                this.result.UrlParts[Constants.AREA] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue;
+                this.result.UrlParts[Constants.AREA] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.Culture.Name).TranslatedValue;
                 return true;
             }
             return false;
@@ -119,7 +119,7 @@ namespace AspNetMvcEasyRouting.Routes
         {
             if (element.ControllerName == this.controller)
             {
-                this.result.UrlParts[Constants.CONTROLLER] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue;
+                this.result.UrlParts[Constants.CONTROLLER] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.Culture.Name).TranslatedValue;
                 return true;
             }
             return false;
@@ -145,7 +145,7 @@ namespace AspNetMvcEasyRouting.Routes
                     return false;
                 }
 
-                this.result.UrlParts[Constants.ACTION] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue;
+                this.result.UrlParts[Constants.ACTION] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.Culture.Name).TranslatedValue;
             }
             else
             {
@@ -260,7 +260,7 @@ namespace AspNetMvcEasyRouting.Routes
                     if (element.Tokens.ContainsKey(this.tokens[i]))
                     {
                         var tokenFound = element.Tokens[this.tokens[i]];
-                        var tokenTranslation = tokenFound.First(d => d.CultureInfo.Name == this.Culture.Name);
+                        var tokenTranslation = tokenFound.First(d => d.Locale.CultureInfo.Name == this.Culture.Name);
                         urlPartToAddIfGoodPart[this.tokens[i]] = tokenTranslation.TranslatedValue;
                     }
                     else

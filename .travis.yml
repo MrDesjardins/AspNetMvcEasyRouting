@@ -1,0 +1,8 @@
+language: csharp
+solution: AspNetMvcEasyRouting.sln
+install:
+  - nuget restore AspNetMvcEasyRouting.sln
+  - nuget install xunit.runners -Version 2.1.0 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release AspNetMvcEasyRouting.sln
+  - mono ./testrunner/xunit.runners.2.1.0/tools/xunit.console.clr4.exe ./AspNetMvcEasyRoutingTest/bin/Release/AspNetMvcEasyRoutingTest.dll

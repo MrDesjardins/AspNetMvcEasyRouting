@@ -6,15 +6,17 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace AspNetMvcEasyRoutingTest.Routes
 {
-    public class RouteTestBase : ContextBoundObject
+    public class RouteTestBase : ContextBoundObject, IClassFixture<RouteFixture>
     {
-        [TestInitialize]
-        public void BetweenTest()
+        private readonly RouteFixture routeFixture;
+
+        public RouteTestBase(RouteFixture routeFixture)
         {
-            RouteTable.Routes.Clear();
+            this.routeFixture = routeFixture;
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
             var queryStringPart = requestUrl;
 
             var fullUri = new Uri(requestUrl, UriKind.RelativeOrAbsolute);
-            var absolutePath = fullUri.IsAbsoluteUri? fullUri.AbsolutePath:"/";
+            var absolutePath = fullUri.IsAbsoluteUri ? fullUri.AbsolutePath : "/";
             if (routePart.Contains("?"))
             {
                 var indexQueryString = routePart.IndexOf("?", StringComparison.InvariantCulture);
@@ -84,7 +86,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
             }
             else
             {
-                routePart = fullUri.IsAbsoluteUri ?  "~/": routePart;
+                routePart = fullUri.IsAbsoluteUri ? "~/" : routePart;
             }
 
             // Setup all Http Context
@@ -130,6 +132,19 @@ namespace AspNetMvcEasyRoutingTest.Routes
                 this.HttpContext = httpContextBase;
                 this.RouteData = routeData;
             }
+        }
+    }
+
+    public class RouteFixture : IDisposable
+    {
+        public RouteFixture()
+        {
+     
+
+        }
+        public void Dispose()
+        {
+            RouteTable.Routes.Clear();
         }
     }
 }
