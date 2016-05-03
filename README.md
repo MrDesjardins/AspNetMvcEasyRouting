@@ -11,6 +11,8 @@ This allow to have Area and Controller based route in Asp.Net MVC in a Fluent wa
 Here is examples with Area:
 
 	public static AreaSectionLocalizedList RoutesArea = FluentLocalizedRoute.BuildRoute()
+            .InLocalRouteBuilder(new CultureInfo("fr-CA"), "http://boursevirtuelle.com")
+            .InLocalRouteBuilder(new CultureInfo("en-US"), "http://stockvirtual.com")
             .ForBilingualArea("moderator", "Moderation-en", "Moderation")
 				.WithBilingualController("Symbol", "Symbol-en", "Symbole")
 					.WithBilingualAction("SymbolChangeList", "Symbol-Change-List", "Liste-symbole-renommer")
@@ -31,6 +33,8 @@ Here is examples with Area:
 Here is examples with controllers:
 
         public static ControllerSectionLocalizedList RoutesController = FluentLocalizedRoute.BuildRoute()
+            .InLocalRouteBuilder(new CultureInfo("fr-CA"), "http://boursevirtuelle.com")
+            .InLocalRouteBuilder(new CultureInfo("en-US"), "http://stockvirtual.com")
             .ForBilingualController("Home", "Home", "Demarrer")
 				.WithBilingualAction("Index", "Index", "Index")
 					.UseEmptyUrl()
