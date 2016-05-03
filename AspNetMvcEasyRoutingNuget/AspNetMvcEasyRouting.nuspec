@@ -3,13 +3,13 @@
   <metadata>
     <id>AspNetMvcEasyRouting</id>
 	<title>Asp.Net Mvc Easy Routing</title>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <authors>Patrick Desjardins</authors>
     <owners>Patrick Desjardins</owners>
     <projectUrl>https://github.com/MrDesjardins/AspNetMvcEasyRouting</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Asp.Net Mvc easy routing provides a user-friendly fluent Api to define routes in multiple languages.</description>
-    <releaseNotes>Initial release</releaseNotes>
+    <releaseNotes>More than 2 locales possible</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>asp.net mvc route routing</tags>
     <dependencies>
