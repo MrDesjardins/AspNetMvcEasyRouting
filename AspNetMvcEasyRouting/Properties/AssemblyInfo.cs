@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("AspNetMvcEasyRouting")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Asp.Net Mvc Easy Routing")]
+[assembly: AssemblyDescription("Asp.Net Mvc easy routing provides a user-friendly fluent Api to define routes in multiple languages.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Patrick Desjardins")]
 [assembly: AssemblyProduct("AspNetMvcEasyRouting")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
@@ -35,5 +35,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.3.0")]
+[assembly: AssemblyFileVersion("1.0.3.0")]

@@ -1,0 +1,1 @@
+nuget pack AspNetMvcEasyRouting.csproj -Prop Configuration=Release
