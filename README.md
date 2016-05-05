@@ -1,7 +1,13 @@
 # Asp.Net Mvc Easy Routing
 
 [![Build Status](https://travis-ci.org/MrDesjardins/AspNetMvcEasyRouting.svg?branch=master)](https://travis-ci.org/MrDesjardins/AspNetMvcEasyRouting)
-[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?maxAge=2592000)](https://www.nuget.org/packages/AspNetMvcEasyRouting/)
+
+[![aspnetmvceasyrouting MyGet Build Status](https://www.myget.org/BuildSource/Badge/aspnetmvceasyrouting?identifier=6e094bf3-a00b-4fff-a9de-215d8db5e30f)](https://www.myget.org/)
+
+[![NuGet Badge](https://buildstats.info/nuget/AspNetMvcEasyRouting)](https://www.nuget.org/packages/AspNetMvcEasyRouting/)
+
+[![Build history](https://buildstats.info/travisci/chart/MrDesjardins/AspNetMvcEasyRouting)](https://travis-ci.org/MrDesjardins/AspNetMvcEasyRouting)
+
 
 Asp.Net Mvc Easy Routing is a solution to create localized route easily with a fluent Api.
 
