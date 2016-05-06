@@ -20,7 +20,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenUrl_WhenDoesnotExist_ThenNull()
         {
             // Arrange
-            RouteTable.Routes.Clear();
+            // -
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/123").RouteData;
@@ -33,7 +33,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenDefineLocalization_Then()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR, "http://website.fr")
@@ -43,7 +42,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
@@ -60,7 +59,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenNormalRoute_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -70,7 +68,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
@@ -87,7 +85,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaTwoControllerAction_WhenNormalRoute_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -99,7 +96,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
                 .WithUrl("{controller}/{action}")
               .ToList()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("controller_en/action_en").RouteData;
@@ -116,7 +113,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenDefaultValueSet_ThenRouteHasDefaultValue()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -127,7 +123,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}/page/{pagevalue}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/123").RouteData;
@@ -145,7 +141,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenDefaultValueAsObjectSet_ThenRouteHasDefaultValue()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -156,7 +151,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}/page/{pagevalue}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/123").RouteData;
@@ -174,7 +169,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenOneMirrorUrl_ThenRouteRetrieved()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -185,7 +179,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithMirrorUrl("boom")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("boom").RouteData;
@@ -202,7 +196,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenTwoMirrorUrl_ThenRouteCanBeRetrievedIn3DifferentWays()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -214,7 +207,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithMirrorUrl("boom2")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData1 = base.GetRouteDataForUrl("boom").RouteData;
@@ -232,7 +225,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenToken_ThenRouteWithTokenTranslated()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -244,7 +236,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithMirrorUrl("boom")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/token_en").RouteData;
@@ -261,7 +253,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenNamespace_ThenRouteWithNamespace()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -273,7 +264,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithMirrorUrl("boom")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
@@ -292,7 +283,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenTwoNamespace_ThenRouteWithNamespace()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -305,7 +295,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithMirrorUrl("boom")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en").RouteData;
@@ -326,7 +316,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenConstaintValid_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -337,7 +326,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}/{page}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/1").RouteData;
@@ -355,7 +344,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenConstaintNotValid_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -366,7 +354,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}/{page}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/asd").RouteData;
@@ -379,7 +367,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenConstaintWithObject_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -390,7 +377,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}/{page}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/1").RouteData;
@@ -408,7 +395,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenMoreThanOneArea_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -422,7 +408,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithUrl("{area}/{controller}/{action}/{page}")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en2/controller2_en/action2_en/1").RouteData;
@@ -440,7 +426,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerActionWithDomainRoute_WhenUseDomainRouteArea_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -450,7 +435,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .UseEmptyUrl()
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("http://mywebsite.com").RouteData;
@@ -466,7 +451,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerActionWithDomainRoute_WhenUseDomainRouteController_ThenRouteFound()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -475,7 +459,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .UseEmptyUrl()
               .ToList()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("http://mywebsite.com").RouteData;
@@ -492,7 +476,6 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
         public void GivenAnAreaControllerAction_WhenTokenRepeated_ThenRouteIgnoreLastOne()
         {
             // Arrange
-            RouteTable.Routes.Clear();
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
@@ -505,7 +488,7 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
               .WithMirrorUrl("boom")
               .ToListArea()
             ;
-            RouteTable.Routes.AddRoutes(routesInStructure);
+            base.routeCollection.AddRoutes(routesInStructure);
 
             // Act
             RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/page/token_en").RouteData;

@@ -9,13 +9,19 @@ using Xunit;
 
 namespace AspNetMvcEasyRoutingTest.Routes
 {
-    public class RouteTestBase : ContextBoundObject
+    public class RouteTestBase : IDisposable
     {
+        protected RouteCollection routeCollection;
 
         public RouteTestBase()
         {
-           
+            this.routeCollection = new RouteCollection();
         }
+        public void Dispose()
+        {
+            this.routeCollection = null;
+        }
+
 
         /// <summary>
         ///     From URL to Controller/Action, this method return the route and http context after passing the URL
@@ -28,7 +34,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
             var fullUri = new Uri(url, UriKind.RelativeOrAbsolute);
             string urlToUse = fullUri.IsAbsoluteUri ? url : "~/" + url;
             var context = this.FakeHttpContext(requestUrl: urlToUse);
-            RouteData routeData = RouteTable.Routes.GetRouteData(context);
+            RouteData routeData = this.routeCollection.GetRouteData(context);
             return new RouteAndContext(context, routeData);
         }
 
@@ -43,9 +49,9 @@ namespace AspNetMvcEasyRoutingTest.Routes
         protected UrlHelper GetUrlHelper(string appPath = "~/")
         {
             HttpContextBase httpContext = this.FakeHttpContext(appPath);
-            var routeData = /*RouteTable.Routes.GetRouteData(httpContext) ?? */ new RouteData();
+            var routeData = /*routeCollection.GetRouteData(httpContext) ?? */ new RouteData();
             RequestContext requestContext = new RequestContext(httpContext, routeData);
-            UrlHelper helper = new UrlHelper(requestContext, RouteTable.Routes);
+            UrlHelper helper = new UrlHelper(requestContext, this.routeCollection);
             return helper;
         }
 
@@ -106,14 +112,6 @@ namespace AspNetMvcEasyRoutingTest.Routes
             requestContext.Setup(d => d.HttpContext).Returns(context.Object);
             request.Setup(d => d.RequestContext).Returns(requestContext.Object);
             request.Setup(d => d.Url).Returns(fullUri);
-            //if (isAbsoluteUrl)
-            //{
-            //    request.Setup(d => d.Url).Returns(new Uri(requestUrl, UriKind.Absolute));
-            //}
-            //else
-            //{
-            //    request.Setup(d => d.Url).Returns(new Uri(requestUrl, UriKind.Relative));
-            //}
             return context.Object;
         }
 
@@ -131,6 +129,8 @@ namespace AspNetMvcEasyRoutingTest.Routes
                 this.RouteData = routeData;
             }
         }
+
+       
     }
 
     public class RouteFixture : IDisposable
