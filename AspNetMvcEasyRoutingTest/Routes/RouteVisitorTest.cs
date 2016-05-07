@@ -59,21 +59,21 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteLocalizedVisitor_WhenControllerNotDefined_ThenException()
         {
             // Arrange & Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", null, "SymbolChangeList", null, null));
+            Assert.Throws<ArgumentNullException>(() => new RouteLocalizedVisitor(LocalizedSection.EN_NAME, "moderator", null, "SymbolChangeList", null, null));
         }
 
         [Fact]
         public void GivenARouteLocalizedVisitor_WhenActionNotDefined_ThenException()
         {
             // Arrange & Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", "ControllerName", null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new RouteLocalizedVisitor(LocalizedSection.EN_NAME, "moderator", "ControllerName", null, null, null));
         }
 
         [Fact]
         public void GivenARouteToVisit_WhenAreaControllerActionUnique_ThenReturnThisUniqueRoute()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", "Symbol", "SymbolChangeList", null, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, "moderator", "Symbol", "SymbolChangeList", null, null);
 
             // Act
             RoutesArea.AcceptRouteVisitor(visitor);
@@ -84,10 +84,24 @@ namespace AspNetMvcEasyRoutingTest.Routes
         }
 
         [Fact]
+        public void GivenARouteToVisit_WhenAreaControllerActionUniqueFrench_ThenReturnThisUniqueRoute()
+        {
+            // Arrange
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.FR_NAME, "moderator", "Symbol", "SymbolChangeList", null, null);
+
+            // Act
+            RoutesArea.AcceptRouteVisitor(visitor);
+
+            // Assert
+            var result = visitor.Result().FinalUrl();
+            Assert.Equal("Moderation/Symbole/Liste-symbole-renommer", result);
+        }
+
+        [Fact]
         public void GivenARouteToVisit_WhenAreaControllerActionNotUniqueButValueUnique_ThenReturnRouteWithValue()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", "Symbol", "SymbolChangeList", new[] {"value1"}, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, "moderator", "Symbol", "SymbolChangeList", new[] {"value1"}, null);
 
             // Act
             RoutesArea.AcceptRouteVisitor(visitor);
@@ -101,7 +115,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteToVisit_WhenAreaControllerActionValueNotUniqueButTokenUnique_ThenReturnRouteWithToken()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, "moderator", "Symbol", "SymbolChangeList", new[] {"value1"}, new[] {"token1"});
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, "moderator", "Symbol", "SymbolChangeList", new[] {"value1"}, new[] {"token1"});
 
             // Act
             RoutesArea.AcceptRouteVisitor(visitor);
@@ -116,7 +130,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteToVisit_WhenNoArea_ThenReturnRouteWithoutArea()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "c", "a", null, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, null, "c", "a", null, null);
 
             // Act
             RoutesController.AcceptRouteVisitor(visitor);
@@ -130,7 +144,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteToVisit_WhenNoAreaWithDefaultValue_ThenReturnRouteWithoutAreaWithDefaultValue()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", null, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, null, "Account", "Profile", null, null);
 
             // Act
             RoutesController.AcceptRouteVisitor(visitor);
@@ -144,7 +158,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSet_ThenReturnRouteWithoutAreaWithDefaultValue()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", new[] {"username"}, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, null, "Account", "Profile", new[] {"username"}, null);
 
             // Act
             RoutesController.AcceptRouteVisitor(visitor);
@@ -158,7 +172,7 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSetNotEmpty_ThenReturnRouteWithoutAreaWithDefaultValue()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "c", "a2", new[] {"v1"}, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, null, "c", "a2", new[] {"v1"}, null);
 
             // Act
             RoutesController.AcceptRouteVisitor(visitor);
@@ -173,13 +187,38 @@ namespace AspNetMvcEasyRoutingTest.Routes
         public void GivenARouteToVisit_WhenNoFound_ThenThrowException()
         {
             // Arrange
-            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "NotFound", "DoesntExist", null, null);
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.EN_NAME, null, "NotFound", "DoesntExist", null, null);
 
             // Act 
             RoutesController.AcceptRouteVisitor(visitor);
 
             // Assert
             Assert.Throws<RouteNotFound>(() => visitor.Result().FinalUrl());
+        }
+
+
+
+
+        [Fact]
+        public void GivenARouteToVisit_WhenRouteLocalSetInReverse_ThenFindRoute()
+        {
+            // Arrange
+            var RouteWithDomain = FluentLocalizedRoute.BuildRoute()
+                .InLocalRouteBuilder(LocalizedSection.FR)
+                .InLocalRouteBuilder(LocalizedSection.EN)
+                .ForBilingualController("Account", "Account", "Compte")
+                    .WithBilingualAction("ActivateAccount", "ActivateAccount", "Activer-compte")
+                    .WithUrl("{controller}/{action}/{emailAddress}/{now}")
+                    .WithTranslatedTokens("now", "Now", "Maintenant")
+                    .ToList();
+            var visitor = new RouteLocalizedVisitor(LocalizedSection.FR_NAME, null, "Account", "ActivateAccount", new[] { "emailAddress" }, new[] { "now" });
+
+            // Act 
+            RouteWithDomain.AcceptRouteVisitor(visitor);
+
+            // Assert
+            var result = visitor.Result().FinalUrl();
+            Assert.Equal("Account/ActivateAccount/{emailAddress}/Now", result);
         }
     }
 }

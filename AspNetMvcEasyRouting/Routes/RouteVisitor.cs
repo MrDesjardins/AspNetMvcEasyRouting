@@ -65,18 +65,18 @@ namespace AspNetMvcEasyRouting.Routes
         private readonly string[] urlInput;
 
 
-        public CultureInfo Culture { get; }
+        public string CultureName { get; }
 
 
         /// <summary>
         /// </summary>
-        /// <param name="culture">Culture used for the route to Url convertion</param>
+        /// <param name="cultureName"></param>
         /// <param name="area">Area requested. Can be null.</param>
         /// <param name="controller">Controller requested. This cannot be null.</param>
         /// <param name="action">Action requested. This cannot be null</param>
         /// <param name="urlInput">Specific input. Can be null.</param>
         /// <param name="tokens">Custom localized token. Can be null.</param>
-        public RouteLocalizedVisitor(CultureInfo culture, string area, string controller, string action, string[] urlInput, string[] tokens)
+        public RouteLocalizedVisitor(string cultureName, string area, string controller, string action, string[] urlInput, string[] tokens)
         {
             if (controller == null)
             {
@@ -86,7 +86,7 @@ namespace AspNetMvcEasyRouting.Routes
             {
                 throw new ArgumentNullException(nameof(action));
             }
-            this.Culture = culture;
+            this.CultureName = cultureName;
             this.area = area;
             this.controller = controller;
             this.action = action;
@@ -104,7 +104,7 @@ namespace AspNetMvcEasyRouting.Routes
         {
             if (element.AreaName == this.area)
             {
-                this.result.UrlParts[Constants.AREA] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.Culture.Name).TranslatedValue;
+                this.result.UrlParts[Constants.AREA] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.CultureName).TranslatedValue;
                 return true;
             }
             return false;
@@ -119,7 +119,7 @@ namespace AspNetMvcEasyRouting.Routes
         {
             if (element.ControllerName == this.controller)
             {
-                this.result.UrlParts[Constants.CONTROLLER] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.Culture.Name).TranslatedValue;
+                this.result.UrlParts[Constants.CONTROLLER] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.CultureName).TranslatedValue;
                 return true;
             }
             return false;
@@ -145,7 +145,7 @@ namespace AspNetMvcEasyRouting.Routes
                     return false;
                 }
 
-                this.result.UrlParts[Constants.ACTION] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.Culture.Name).TranslatedValue;
+                this.result.UrlParts[Constants.ACTION] = element.Translation.First(d => d.Locale.CultureInfo.Name == this.CultureName).TranslatedValue;
             }
             else
             {
@@ -260,7 +260,7 @@ namespace AspNetMvcEasyRouting.Routes
                     if (element.Tokens.ContainsKey(this.tokens[i]))
                     {
                         var tokenFound = element.Tokens[this.tokens[i]];
-                        var tokenTranslation = tokenFound.First(d => d.Locale.CultureInfo.Name == this.Culture.Name);
+                        var tokenTranslation = tokenFound.First(d => d.Locale.CultureInfo.Name == this.CultureName);
                         urlPartToAddIfGoodPart[this.tokens[i]] = tokenTranslation.TranslatedValue;
                     }
                     else
