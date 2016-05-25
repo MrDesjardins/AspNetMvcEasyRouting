@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>$id$</id>
-	<title>$title$</title>
+	  <title>$title$</title>
     <version>$version$</version>
     <authors>$author$</authors>
     <owners>$author$</owners>
     <projectUrl>https://github.com/MrDesjardins/AspNetMvcEasyRouting</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>More than 2 locales possible</releaseNotes>
+    <releaseNotes>Add error page support to handle 404</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>asp.net mvc route routing</tags>
     <dependencies>
