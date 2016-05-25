@@ -85,6 +85,13 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             return rbc;
         }
 
+        public IRouteBuilderAction_ToListOnly ForPageNotFound(string errorcontroller, string erroraction)
+        {
+            var controller = this.ForBilingualController(errorcontroller, errorcontroller, errorcontroller);
+            var action = controller.WithBilingualAction(erroraction, erroraction, erroraction).WithUrl("{*url}");
+            return action;
+        }
+
         public IRouteBuilderAndILocalRouteBuilder InLocalRouteBuilder(CultureInfo culture)
         {
             this.listSupportedLocale.Add(new Locale(culture));
@@ -99,10 +106,13 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
     }
 
+
     public interface IRouteBuilder
     {
         IRouteBuilderControllerAndControllerConfiguration ForBilingualController(string controllerName, params string[] controllerLocalizedString);
         IRouteBuilderArea ForBilingualArea(string areaName, params string[] areaLocalizedString);
+
+        IRouteBuilderAction_ToListOnly ForPageNotFound(string errorcontroller, string erroraction);
     }
 
     public interface IRouteAreaBuilder
@@ -378,6 +388,14 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             return this.routeBuilder.ForBilingualArea(areaName, areaLocalizedString);
         }
 
+        public IRouteBuilderAction_ToListOnly ForPageNotFound(string errorcontroller, string erroraction)
+        {
+            this.AddInActionList();
+            var controller = this.ForBilingualController(errorcontroller, errorcontroller, errorcontroller);
+            var action=controller.WithBilingualAction(erroraction, erroraction, erroraction).WithUrl("{*url}");
+            return action;
+        }
+
         public IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, params string[] localizedToken)
         {
             if (this.routeBuilder.listSupportedLocale.Count != localizedToken.Length)
@@ -452,6 +470,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
     public interface IRouteBuilderAction_ToList : IRouteBuilder, IAndAction, ITranslatedTokens, IUrl, IRouteBuilderAction_ToListOnly
     {
+       
     }
 
     public interface IRouteBuilderAction_ToListWithoutUrl : IRouteBuilder, IAndAction, ITranslatedTokens, IRouteBuilderAction_ToListOnly, IUrlMirrorUrl

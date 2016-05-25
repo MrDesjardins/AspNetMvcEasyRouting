@@ -500,6 +500,74 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             Assert.NotNull(routeData2);
             Assert.NotNull(routeData3);
         }
+        [Fact]
+        public void GivenANotExistingRoute_When404PageDefined_ThenRouteTo404()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForBilingualController("controller1", "controller_en", "controller_fr")
+                  .WithBilingualAction("action1", "action_en", "action_fr")
+                  .UseEmptyUrl()
+              .ForPageNotFound("errorcontroller", "erroraction")
+              .ToList()
+            ;
+            base.routeCollection.AddRoutes(routesInStructure);
 
+            // Act
+            RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/notfound").RouteData;
+
+            // Assert
+            Assert.NotNull(routeData);
+            Assert.Equal("errorcontroller", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("erroraction", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+        }
+
+        [Fact]
+        public void GivenANotExistingRoute_When404PageUndefined_ThenNull()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForBilingualController("controller1", "controller_en", "controller_fr")
+              .WithBilingualAction("action1", "action_en", "action_fr")
+              .UseEmptyUrl()
+              .ToList()
+            ;
+            base.routeCollection.AddRoutes(routesInStructure);
+
+            // Act
+            RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/notfound").RouteData;
+
+            // Assert
+            Assert.Null(routeData);
+        }
+
+        [Fact]
+        public void GivenANotExistingRoute_When404PageDefinedAtBuildRouteLevel_ThenRouteTo404()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForPageNotFound("errorcontroller", "erroraction")
+              .ToList()
+            ;
+            base.routeCollection.AddRoutes(routesInStructure);
+
+            // Act
+            RouteData routeData = base.GetRouteDataForUrl("area_en/controller_en/action_en/notfound").RouteData;
+
+            // Assert
+            Assert.NotNull(routeData);
+            Assert.Equal("errorcontroller", routeData.Values[Constants.CONTROLLER]);
+            Assert.Equal("erroraction", routeData.Values[Constants.ACTION]);
+            Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
+        }
+
+      
     }
 }
