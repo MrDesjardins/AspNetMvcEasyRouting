@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Mvc;
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
@@ -568,6 +569,32 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
-      
+        [Fact]
+        public void GivenAConfigurationWithAreaControllerActionTokenAndRoutePart_WhenEnglish_ThenReturnEnglishUrl()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForBilingualArea("area1", "area_en", "area_fr")
+              .WithBilingualController("controller1", "controller_en", "controller_fr")
+              .WithBilingualAction("action1", "action_en", "action_fr")
+              .WithTranslatedTokens("token1", "token_en", "token_fr")
+              .WithUrl("{area}/{controller}/{action}/{part1}/{token1}")
+              .ToListArea()
+            ;
+            base.routeCollection.AddRoutes(routesInStructure);
+            UrlHelper helper = GetUrlHelper();
+            var routeParameters = new RouteValueDictionary{
+                                    {Constants.AREA, "area1"},
+                                    {"part1", "1"}
+            };
+
+            //Act
+            string url = helper.Action("action1", "controller1", routeParameters);
+
+            //Assert
+            Assert.Equal("/area_en/controller_en/action_en/1/token_en", url);
+        }
     }
 }
