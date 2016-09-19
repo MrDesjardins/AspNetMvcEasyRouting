@@ -569,32 +569,82 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             Assert.Equal(LocalizedSection.EN, System.Threading.Thread.CurrentThread.CurrentUICulture);
         }
 
+
         [Fact]
-        public void GivenAConfigurationWithAreaControllerActionTokenAndRoutePart_WhenEnglish_ThenReturnEnglishUrl()
+        public void GivenAConfigurationWithControllerActionTokenAndRoutePart_WhenUsingUrlHelper_ThenReturnEnglishUrl()
         {
             // Arrange
             var routesInStructure = FluentLocalizedRoute.BuildRoute()
               .InLocalRouteBuilder(LocalizedSection.EN)
               .InLocalRouteBuilder(LocalizedSection.FR)
-              .ForBilingualArea("area1", "area_en", "area_fr")
-              .WithBilingualController("controller1", "controller_en", "controller_fr")
+              .ForBilingualController("controller1", "controller_en", "controller_fr")
               .WithBilingualAction("action1", "action_en", "action_fr")
-              .WithTranslatedTokens("token1", "token_en", "token_fr")
-              .WithUrl("{area}/{controller}/{action}/{part1}/{token1}")
-              .ToListArea()
+              .WithUrl("{action}/{typeemailtoken}/{typeemail}/{emailkeytoken}/{emailkey}")
+              .WithTranslatedTokens("typeemailtoken", "type", "categorie")
+              .WithTranslatedTokens("emailkeytoken", "by-email-token", "par-jeton-courriel")
+              .ToList()
             ;
             base.routeCollection.AddRoutes(routesInStructure);
             UrlHelper helper = GetUrlHelper();
             var routeParameters = new RouteValueDictionary{
-                                    {Constants.AREA, "area1"},
-                                    {"part1", "1"}
+                                    {"typeemail", "1"},
+                                    {"emailkey", "2"}
             };
 
             //Act
             string url = helper.Action("action1", "controller1", routeParameters);
 
             //Assert
-            Assert.Equal("/area_en/controller_en/action_en/1/token_en", url);
+            Assert.Equal("/action_en/type/1/by-email-token/2", url);
+        }
+
+        [Fact]
+        public void GivenAConfigurationWithControllerActionAndRoutePart_WhenUsingUrlHelper_ThenReturnEnglishUrl()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForBilingualController("controller1", "controller_en", "controller_fr")
+              .WithBilingualAction("action1", "action_en", "action_fr")
+              .WithUrl("{action}/type/{typeemail}/by-email-token/{emailkey}")
+              .ToList()
+            ;
+            base.routeCollection.AddRoutes(routesInStructure);
+            UrlHelper helper = GetUrlHelper();
+            var routeParameters = new RouteValueDictionary{
+                                    {"typeemail", "1"},
+                                    {"emailkey", "2"}
+            };
+
+            //Act
+            string url = helper.Action("action1", "controller1", routeParameters);
+
+            //Assert
+            Assert.Equal("/action_en/type/1/by-email-token/2", url);
+        }
+
+        [Fact]
+        public void GivenAConfigurationWithControllerAction_WhenUsingUrlHelper_ThenReturnEnglishUrl()
+        {
+            // Arrange
+            var routesInStructure = FluentLocalizedRoute.BuildRoute()
+              .InLocalRouteBuilder(LocalizedSection.EN)
+              .InLocalRouteBuilder(LocalizedSection.FR)
+              .ForBilingualController("controller1", "controller_en", "controller_fr")
+              .WithBilingualAction("action1", "action_en", "action_fr")
+              .WithUrl("{controller}/{action}")
+              .ToList()
+            ;
+            base.routeCollection.AddRoutes(routesInStructure);
+            UrlHelper helper = GetUrlHelper();
+
+
+            //Act
+            string url = helper.Action("action1", "controller1");
+
+            //Assert
+            Assert.Equal("/controller_en/action_en", url);
         }
     }
 }

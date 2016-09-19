@@ -101,7 +101,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
             }
             return returnRouteData;
         }
-
+        
         public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
         {
             var currentThreadCulture = Thread.CurrentThread.CurrentUICulture;
@@ -257,6 +257,7 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
 
         public string ReplaceTokens(string url, Dictionary<string, LocalizedSectionList> tokens)
         {
+            var finalUrl = url;
             if (tokens != null)
             {
                 foreach (var key in tokens.Keys)
@@ -265,11 +266,11 @@ namespace AspNetMvcEasyRouting.Routes.Infrastructures
                     if (tokenInCurrentCulture != null)
                     {
                         var toReplace = "{" + key + "}";
-                        return url.Replace(toReplace, WebUtility.UrlEncode(tokenInCurrentCulture.TranslatedValue));
+                        finalUrl = finalUrl.Replace(toReplace, WebUtility.UrlEncode(tokenInCurrentCulture.TranslatedValue));
                     }
                 }
             }
-            return url;
+            return finalUrl;
         }
 
         public string AddKeyValueToUrlAsQueryString(string url, string key, string value)

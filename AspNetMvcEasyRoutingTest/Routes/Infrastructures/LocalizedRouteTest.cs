@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Web.Mvc;
 using System.Web.Routing;
 using AspNetMvcEasyRouting.Routes;
 using AspNetMvcEasyRouting.Routes.Infrastructures;
@@ -515,6 +516,35 @@ namespace AspNetMvcEasyRoutingTest.Routes.Infrastructures
             Assert.Equal("controller1", stub.Values[Constants.CONTROLLER]);
             Assert.Equal("action1", stub.Values[Constants.ACTION]);
         }
+
+
+        [Fact]
+        public void GivenALocalizedRoute_ForGetVirtualPath_WhenEnglishWithTokens_ThenReturnEnglishUrl()
+        {
+            // Arrange
+            var routeValueDictionary = new RouteValueDictionary{
+                                    {"typeemail", "1"},
+                                    {"emailkey", "2"}
+            };
+
+            var dataTokens = new RouteValueDictionary{
+                                    {"typeemailtoken", "type"},
+                                    {"emailkeytoken", "by-email-token"}
+            };
+            var controller = this.GetEmptyControllerSectionLocalized("controller1", "controller1");
+            var action = this.GetEmptyActionSectionLocalized("action_en", "action_fr");
+            var stub = new StubbedLocalizedRoute(null, controller, action, "{action}/{typeemailtoken}/{typeemail}/{emailkeytoken}/{emailkey}", routeValueDictionary, null, dataTokens, null, this.enlishLocal);
+            var requestContext = this.GetRouteDataForUrl("{area}/{controller}/{action}");
+            var virtualDataPath = new VirtualPathData(stub, "");
+            stub.VirtualPathData = virtualDataPath;
+
+            //Act
+            var virtualDataPathAfter = stub.GetVirtualPath(requestContext.HttpContext.Request.RequestContext, routeValueDictionary);
+
+            //Assert
+            Assert.Equal("{action}/{typeemailtoken}/1/{emailkeytoken}/2", virtualDataPathAfter.VirtualPath);
+        }
+
 
         private AreaSectionLocalized GetEmptyAreaSectionLocalized(string english = null, string french = null)
         {
